@@ -1,12 +1,35 @@
+<script>
+import AppHeader from './components/AppHeader.vue';
+import AppMain from './components/AppMain.vue';
+export default {
+  data() {
+    return { 
+      // count: 0
+    }
+  },
+  components: {
+    AppHeader,
+    AppMain
+  },
+  methods: {
+    // incrementCount() {
+    //   this.count++;
+    // }
+  }
+}
+</script>
+
 <template>
-  <div id="app">
-    <router-view />
-    <!-- Qui Vue Router renderizzerà il componente corretto -->
+  <div>
+    
+    <AppHeader />
+    
+    <AppMain />
+
   </div>
 </template>
 
-<script>
-export default {
-  name: "App",
-};
-</script>
+<style>
+  /* Import all of Bootstrap's CSS */
+  /* @import "bootstrap/scss/bootstrap"; */
+</style>

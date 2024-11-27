@@ -36,18 +36,30 @@ export default {
 </script>
 
 <template>
-  <div>
-    <h1>Ristoranti</h1>
-    <div
-      v-for="restaurant in restaurants"
-      :key="restaurant.id"
-      class="restaurant"
-    >
-      <h2>{{ restaurant.name }}</h2>
-      <p>{{ restaurant.address }}</p>
-      <button @click="goToDetails(restaurant.id)">Visualizza Piatti</button>
+    <div class="container my-5 shadow p-3 mb-5 bg-body-tertiary rounded text-center">
+        <h1 class="text-body-tertiary mb-4">
+            Ristoranti
+        </h1>
+        <div class="row">
+            <div class="col-4" v-for="restaurant in restaurants" :key="restaurant.id">
+                <div class="card bg-secondary-subtle shadow p-3 mb-5 bg-body-tertiary rounded">
+                    <div class="card-body text-center">
+                        <div>
+                            <h2 class="text-body-tertiary mb-4">
+                                {{ restaurant.name }}
+                            </h2>
+                            <p class="text-body-tertiary mb-4">
+                                {{ restaurant.address }}
+                            </p>
+                            <button @click="goToDetails(restaurant.id)" class="btn btn-primary">
+                                Visualizza Piatti
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </template>
 
 <style>
