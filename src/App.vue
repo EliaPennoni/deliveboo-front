@@ -1,15 +1,12 @@
 <template>
   <div id="app">
-    <RestaurantList />
+    <router-view />
+    <!-- Qui Vue Router renderizzerà il componente corretto -->
   </div>
 </template>
 
 <script>
-import RestaurantList from "./components/RestaurantList.vue";
-
 export default {
-  components: {
-    RestaurantList,
-  },
+  name: "App",
 };
 </script>

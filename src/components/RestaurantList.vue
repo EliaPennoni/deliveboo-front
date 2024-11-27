@@ -4,13 +4,25 @@ import axios from "axios";
 export default {
   data() {
     return {
-      restaurants: [],
-      loading: true,
+      restaurants: [], // Lista ristoranti
+      loading: true, // Stato di caricamento
     };
   },
+  methods: {
+    goToDetails(id) {
+      if (!id) {
+        console.error("Errore: ID non valido!");
+        return;
+      }
+      console.log(`Naviga al ristorante con ID: ${id}`); // Debug
+      this.$router.push({ name: "restaurantDetails", params: { id } });
+    },
+  },
+
   created() {
+    // Chiamata API per ottenere i ristoranti
     axios
-      .get("/api/restaurants")
+      .get("http://127.0.0.1:8000/api/restaurants")
       .then((response) => {
         this.restaurants = response.data;
         this.loading = false;
@@ -26,22 +38,14 @@ export default {
 <template>
   <div>
     <h1>Ristoranti</h1>
-    <div v-if="loading">Caricamento...</div>
-    <div v-else>
-      <div
-        v-for="restaurant in restaurants"
-        :key="restaurant.id"
-        class="restaurant"
-      >
-        <h2>{{ restaurant.name }}</h2>
-        <p>{{ restaurant.address }}</p>
-        <h3>Piatti</h3>
-        <ul>
-          <li v-for="dish in restaurant.dishes" :key="dish.id">
-            {{ dish.name }} - €{{ dish.price }}
-          </li>
-        </ul>
-      </div>
+    <div
+      v-for="restaurant in restaurants"
+      :key="restaurant.id"
+      class="restaurant"
+    >
+      <h2>{{ restaurant.name }}</h2>
+      <p>{{ restaurant.address }}</p>
+      <button @click="goToDetails(restaurant.id)">Visualizza Piatti</button>
     </div>
   </div>
 </template>
