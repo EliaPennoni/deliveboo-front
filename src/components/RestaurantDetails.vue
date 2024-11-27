@@ -2,22 +2,22 @@
 import axios from "axios";
 
 export default {
+  props: ["id"], // Aggiungi props per ricevere l'id dalla rotta
   data() {
     return {
       restaurant: null, // Informazioni sul ristorante
     };
   },
   created() {
-    const id = this.$route.params.id;
-    console.log("ID ricevuto nella rotta:", id); // Verifica che l'ID sia corretto
+    console.log("ID ricevuto nella rotta:", this.id); // Debug per verificare l'ID
 
-    if (!id) {
+    if (!this.id) {
       console.error("Errore: ID non definito!");
       return;
     }
 
     axios
-      .get(`http://127.0.0.1:8000/api/restaurants/${id}`)
+      .get(`http://127.0.0.1:8000/api/restaurants/${this.id}`)
       .then((response) => {
         console.log("Risposta API:", response.data); // Debug della risposta API
         this.restaurant = response.data;
