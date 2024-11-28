@@ -8,8 +8,6 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `@import "bootstrap/scss/bootstrap";`,
-        additionalData: `@import "@/styles/global.scss";`, // opzionale, se hai variabili globali
       },
     },
   },

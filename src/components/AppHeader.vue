@@ -26,13 +26,15 @@ export default {
     },
     methods: {
         // Funzione per ottenere i dati dal backend
-        async fetchData() {
-            try {
-                const response = await axios.get("http://127.0.0.1:8000/api/restaurants"); 
-                this.restaurants = response.data; 
-            } catch (error) {
-                console.error("Errore nel recupero dei dati:", error);
-            }
+        fetchData() {
+        axios
+            .get("http://127.0.0.1:8000/api/restaurants")
+            .then((response) => {
+            this.restaurants = response.data;
+            })
+            .catch((error) => {
+            console.error("Errore nel recupero dei dati:", error);
+            });
         },
 
         onSearch() {
