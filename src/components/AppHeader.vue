@@ -1,123 +1,123 @@
-<script>
-import axios from "axios";
+<template>
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <div class="collapse navbar-collapse row d-flex justify-content-between">
+        <div class="col-6">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Menù</a>
+            </li>
+          </ul>
+        </div>
 
-export default {
-    data(){
-        return {
-            restaurants: [],
-            searchQuery: ""
-        };
-    },
-    computed: {
-        // Filtro dinamico in base alla query di ricerca
-        filteredRestaurant() {
-        // Se la ricerca è vuota, non mostrare nulla
-        if (this.searchQuery.trim() === "") {
-            return [];
-        }
-        return this.restaurants.filter(restaurant =>
-            restaurant.name.toLowerCase().includes(this.searchQuery.toLowerCase())
-        );
-    }
-    },
-    mounted() {
-        // Recupera i dati dal backend al momento del montaggio del componente
-        this.fetchData();
-    },
-    methods: {
-        // Funzione per ottenere i dati dal backend
-        async fetchData() {
-            try {
-                const response = await axios.get("http://127.0.0.1:8000/api/restaurants"); 
-                this.restaurants = response.data; 
-            } catch (error) {
-                console.error("Errore nel recupero dei dati:", error);
-            }
-        },
+        <!-- Pulsante per la registrazione come ristoratore -->
+        <a href="http://127.0.0.1:8000/" class="btn btn-primary"
+          >accedi o registrati</a
+        >
 
-        onSearch() {
-            // Potresti voler fare qualcosa quando l'utente digita
-            console.log("Ricerca attiva:", this.searchQuery);
-        }
-    }
+        <!-- Pulsante Carrello -->
+        <button @click="toggleCart" class="btn btn-outline-primary">
+          Carrello
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Carrello a scomparsa -->
+  <div v-if="cartVisible" class="cart-overlay">
+    <div class="cart-content">
+      <h3>Il tuo Carrello</h3>
+      <ul>
+        <li v-for="(item, index) in cart" :key="index">
+          <span
+            >{{ item.name }} - Quantità: {{ item.quantity }} - €{{
+              item.price * item.quantity
+            }}</span
+          >
+          <button @click="removeItem(index)">Rimuovi</button>
+        </li>
+      </ul>
+      <p v-if="cart.length > 0">
+        <strong>Totale: €{{ total }}</strong>
+      </p>
+      <button v-if="cart.length > 0" @click="proceedToCheckout">
+        Checkout
+      </button>
+      <button v-else>Carrello vuoto</button>
+    </div>
+  </div>
+</template>
   
+  <script>
+export default {
+  data() {
+    return {
+      cartVisible: false, // Stato del carrello
+      cart: JSON.parse(localStorage.getItem("cart")) || [], // Carrello salvato in localStorage
+    };
+  },
+  computed: {
+    total() {
+      return this.cart.reduce(
+        (acc, item) => acc + item.price * item.quantity,
+        0
+      );
+    },
+  },
+  methods: {
+    toggleCart() {
+      this.cartVisible = !this.cartVisible; // Apre/chiude il carrello
+    },
+    removeItem(index) {
+      this.cart.splice(index, 1); // Rimuove l'articolo dal carrello
+      localStorage.setItem("cart", JSON.stringify(this.cart)); // Salva il carrello aggiornato
+    },
+    proceedToCheckout() {
+      // Naviga al processo di checkout
+      this.$router.push("/checkout"); // Supponendo che tu abbia una pagina di checkout
+    },
+  },
 };
 </script>
-
-<template>
-<nav class="navbar navbar-expand-lg">
-    <div class="container">
-
-        <div class="collapse navbar-collapse row d-flex justify-content-between">
-            <div class="col-6">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Menù</a>
-                    </li>
-                </ul>
-            </div>
-            
-
-            <!--Searchbar-->
-            <div class="col-6">
-                <form class="d-flex" role="search">
-                    <input v-model="searchQuery" @input="onSearch" class="form-control me-2" type="text" placeholder="Search" aria-label="Search">
-                    <button @click="searchRestaurant" class="btn btn-outline-success" type="submit">Search</button>
-                </form>
-
-                <!-- Lista degli items con condizione di visibilità -->
-                <div class="results" v-if="filteredRestaurant.length > 0">
-                    <ul>
-                        <li v-for="restaurant in filteredRestaurant" :key="restaurant.id">{{ restaurant.name }}</li>
-                    </ul>
-                </div>
-
-                <!-- Messaggio di no results -->
-                <div v-else-if="searchQuery">
-                    <p>Nessun risultato trovato.</p>
-                </div>
-                
-            </div>
-           
-        </div>
-    </div>
-</nav>
-</template>
-
-<style scoped>
-.navbar {
-  background-color: #E9F8F5;
-  color: #011632;
-  padding: 10px;
-  text-align: center;
+  
+  <style scoped>
+.cart-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: flex-end;
+  z-index: 1000;
 }
 
-.search-input {
-  padding: 8px;
-  font-size: 16px;
-  width: 250px;
-  border-radius: 5px;
+.cart-content {
+  background-color: white;
+  width: 80%;
+  padding: 20px;
+  overflow-y: auto;
 }
 
-.results {
-  margin-top: 20px;
-  padding: 0 20px;
+.cart-content h3 {
+  margin-top: 0;
 }
 
-.results ul {
-  list-style-type: none;
+.cart-content ul {
+  list-style: none;
   padding: 0;
 }
 
-.results li {
-  margin: 5px 0;
-}
-
-p {
-  text-align: center;
-  color: red;
+.cart-content button {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px;
+  cursor: pointer;
 }
 </style>
+  

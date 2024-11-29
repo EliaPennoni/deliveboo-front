@@ -10,3 +10,9 @@
 html {
   font-family: Arial, Helvetica, sans-serif;
 }
+
+img {
+  width: 200px; /* Imposta la larghezza fissa */
+  height: 200px; /* Imposta l'altezza fissa */
+  object-fit: cover; /* Per mantenere la proporzione delle immagini senza distorcerle */
+}
