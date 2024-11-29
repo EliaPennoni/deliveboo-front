@@ -14,9 +14,9 @@
         </div>
 
         <!-- Pulsante per la registrazione come ristoratore -->
-        <a href="http://127.0.0.1:8000/" class="btn btn-primary"
-          >accedi o registrati</a
-        >
+        <a href="http://127.0.0.1:8000/" class="btn btn-primary">
+          Accedi o Registrati
+        </a>
 
         <!-- Pulsante Carrello -->
         <button @click="toggleCart" class="btn btn-outline-primary">
@@ -52,11 +52,15 @@
 </template>
   
   <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
       cartVisible: false, // Stato del carrello
       cart: JSON.parse(localStorage.getItem("cart")) || [], // Carrello salvato in localStorage
+      restaurants: [], // Lista dei ristoranti
+      searchQuery: "", // Query per la ricerca
     };
   },
   computed: {
@@ -66,18 +70,38 @@ export default {
         0
       );
     },
+    filteredRestaurant() {
+      if (this.searchQuery.trim() === "") {
+        return this.restaurants;
+      }
+      return this.restaurants.filter((restaurant) =>
+        restaurant.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+      );
+    },
+  },
+  mounted() {
+    this.fetchData();
   },
   methods: {
+    fetchData() {
+      axios
+        .get("http://127.0.0.1:8000/api/restaurants")
+        .then((response) => {
+          this.restaurants = response.data;
+        })
+        .catch((error) => {
+          console.error("Errore nel recupero dei dati:", error);
+        });
+    },
     toggleCart() {
       this.cartVisible = !this.cartVisible; // Apre/chiude il carrello
     },
     removeItem(index) {
-      this.cart.splice(index, 1); // Rimuove l'articolo dal carrello
-      localStorage.setItem("cart", JSON.stringify(this.cart)); // Salva il carrello aggiornato
+      this.cart.splice(index, 1); // Rimuove il piatto dal carrello
+      localStorage.setItem("cart", JSON.stringify(this.cart)); // Salva il carrello
     },
     proceedToCheckout() {
-      // Naviga al processo di checkout
-      this.$router.push("/checkout"); // Supponendo che tu abbia una pagina di checkout
+      this.$router.push("/checkout"); // Naviga alla pagina di checkout
     },
   },
 };
