@@ -1,66 +1,14 @@
-<template>
-  <nav class="navbar navbar-expand-lg">
-    <div class="container">
-      <div class="collapse navbar-collapse row d-flex justify-content-between">
-        <div class="col-6">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Menù</a>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Pulsante per la registrazione come ristoratore -->
-        <a href="http://127.0.0.1:8000/" class="btn btn-primary">
-          Accedi o Registrati
-        </a>
-
-        <!-- Pulsante Carrello -->
-        <button @click="toggleCart" class="btn btn-outline-primary">
-          Carrello
-        </button>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Carrello a scomparsa -->
-  <div v-if="cartVisible" class="cart-overlay">
-    <div class="cart-content">
-      <h3>Il tuo Carrello</h3>
-      <ul>
-        <li v-for="(item, index) in cart" :key="index">
-          <span
-            >{{ item.name }} - Quantità: {{ item.quantity }} - €{{
-              item.price * item.quantity
-            }}</span
-          >
-          <button @click="removeItem(index)">Rimuovi</button>
-        </li>
-      </ul>
-      <p v-if="cart.length > 0">
-        <strong>Totale: €{{ total }}</strong>
-      </p>
-      <button v-if="cart.length > 0" @click="proceedToCheckout">
-        Checkout
-      </button>
-      <button v-else>Carrello vuoto</button>
-    </div>
-  </div>
-</template>
-  
-  <script>
-import axios from "axios";
+<script>
+import Cart from "./Cart.vue";
 
 export default {
+  components: {
+    Cart,
+  },
   data() {
     return {
-      cartVisible: false, // Stato del carrello
-      cart: JSON.parse(localStorage.getItem("cart")) || [], // Carrello salvato in localStorage
-      restaurants: [], // Lista dei ristoranti
-      searchQuery: "", // Query per la ricerca
+      cartVisible: false,
+      cart: JSON.parse(localStorage.getItem("cart")) || [], // Carrello persistente
     };
   },
   computed: {
@@ -70,44 +18,66 @@ export default {
         0
       );
     },
-    filteredRestaurant() {
-      if (this.searchQuery.trim() === "") {
-        return this.restaurants;
-      }
-      return this.restaurants.filter((restaurant) =>
-        restaurant.name.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
-    },
-  },
-  mounted() {
-    this.fetchData();
   },
   methods: {
-    fetchData() {
-      axios
-        .get("http://127.0.0.1:8000/api/restaurants")
-        .then((response) => {
-          this.restaurants = response.data;
-        })
-        .catch((error) => {
-          console.error("Errore nel recupero dei dati:", error);
-        });
-    },
     toggleCart() {
-      this.cartVisible = !this.cartVisible; // Apre/chiude il carrello
+      this.cartVisible = !this.cartVisible;
     },
-    removeItem(index) {
-      this.cart.splice(index, 1); // Rimuove il piatto dal carrello
-      localStorage.setItem("cart", JSON.stringify(this.cart)); // Salva il carrello
+    updateCart(newCart) {
+      this.cart = newCart;
+      localStorage.setItem("cart", JSON.stringify(this.cart)); // Persisti il carrello
     },
-    proceedToCheckout() {
-      this.$router.push("/checkout"); // Naviga alla pagina di checkout
+    addToCart(dish) {
+      const existingItem = this.cart.find((item) => item.id === dish.id);
+      if (existingItem) {
+        existingItem.quantity++; // Incrementa il contatore se il piatto è già nel carrello
+      } else {
+        this.cart.push({ ...dish, quantity: 1 }); // Aggiungi il piatto al carrello
+      }
+      this.updateCart([...this.cart]); // Sincronizza il carrello
     },
   },
 };
 </script>
-  
-  <style scoped>
+
+<template>
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a href="/" class="col-6">
+        <img
+          class="logo-deliveboo"
+          src="/images/Logo-deliveBoo.svg"
+          alt="deliveBoo-logo"
+        />
+      </a>
+      <div class="d-flex justify-content-end">
+        <a href="http://127.0.0.1:8000/" class="btn btn-dark text-white">
+          Accedi o Registrati
+        </a>
+        <button @click="toggleCart" class="btn btn-light text-dark ml-3">
+          Carrello
+        </button>
+      </div>
+    </div>
+    <Cart
+      :cart="cart"
+      :cartVisible="cartVisible"
+      :total="total"
+      @toggleCart="toggleCart"
+      @updateCart="updateCart"
+    />
+  </nav>
+</template>
+
+<style scoped>
+/* Logo */
+.logo-deliveboo {
+  max-width: 100%;
+  height: auto;
+  margin-top: 20px;
+}
+
+/* Overlay del carrello */
 .cart-overlay {
   position: fixed;
   top: 0;
@@ -143,5 +113,25 @@ export default {
   padding: 5px;
   cursor: pointer;
 }
+
+/* Flexbox per l'header */
+.navbar .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar .d-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar .d-flex .col-6 {
+  flex: 1;
+}
+
+.navbar .btn {
+  margin-left: 15px;
+}
 </style>
-  

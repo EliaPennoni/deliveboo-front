@@ -1,99 +1,60 @@
 <script>
 export default {
-  data() {
-    return {
-      cartVisible: false, // Stato di visibilità del carrello
-      cart: JSON.parse(localStorage.getItem("cart")) || [], // Carrello dal localStorage
-    };
-  },
-  computed: {
-    total() {
-      return this.cart.reduce(
-        (acc, item) => acc + item.price * item.quantity,
-        0
-      );
-    },
+  props: {
+    cart: Array,
+    cartVisible: Boolean,
+    total: Number,
   },
   methods: {
     toggleCart() {
-      this.cartVisible = !this.cartVisible; // Toggle per aprire/chiudere il carrello
+      this.$emit("toggleCart");
     },
-    addToCart(dish) {
-      let item = this.cart.find((item) => item.dishId === dish.id);
-      if (item) {
-        item.quantity++;
+    increaseQuantity(index) {
+      this.cart[index].quantity++;
+      this.syncCart();
+    },
+    decreaseQuantity(index) {
+      if (this.cart[index].quantity > 1) {
+        this.cart[index].quantity--;
       } else {
-        this.cart.push({
-          dishId: dish.id,
-          name: dish.name,
-          price: dish.price,
-          quantity: 1,
-        });
+        this.cart.splice(index, 1); // Rimuove il piatto se la quantità è zero
       }
-      localStorage.setItem("cart", JSON.stringify(this.cart)); // Aggiorna il carrello nel localStorage
+      this.syncCart();
     },
-    removeItem(index) {
-      this.cart.splice(index, 1); // Rimuove il piatto dal carrello
-      localStorage.setItem("cart", JSON.stringify(this.cart)); // Aggiorna il carrello nel localStorage
-    },
-    checkout() {
-      // Gestisci il processo di checkout (ad esempio invia al backend)
-      console.log("Checkout:", this.cart);
+    syncCart() {
+      this.$emit("updateCart", [...this.cart]); // Sincronizza con il genitore
+      localStorage.setItem("cart", JSON.stringify(this.cart)); // Persisti il carrello
     },
   },
 };
 </script>
 
 <template>
-  <div>
-    <!-- Pulsante per aprire/chiudere il carrello -->
-    <button @click="toggleCart" class="cart-toggle-btn">Carrello</button>
-
-    <!-- Carrello a scomparsa -->
-    <div v-if="cartVisible" class="cart-overlay">
-      <div class="cart-content">
-        <h3>Il tuo carrello</h3>
-
-        <!-- Lista dei piatti nel carrello -->
-        <ul>
-          <li v-for="(item, index) in cart" :key="index">
-            <span
-              >{{ item.name }} - {{ item.quantity }} x €{{ item.price }}</span
-            >
-            <button @click="removeItem(index)">Rimuovi</button>
-          </li>
-        </ul>
-
-        <!-- Totale del carrello -->
-        <div v-if="cart.length > 0">
-          <p>
-            <strong>Totale: €{{ total }}</strong>
-          </p>
-          <button @click="checkout">Checkout</button>
-        </div>
-        <div v-else>
-          <p>Il carrello è vuoto.</p>
-        </div>
-      </div>
+  <div v-if="cartVisible" class="cart-overlay">
+    <div class="cart-content">
+      <button @click="toggleCart" class="btn btn-secondary">Chiudi</button>
+      <h3>Carrello</h3>
+      <ul>
+        <li v-for="(item, index) in cart" :key="item.id">
+          <span>{{ item.name }} - €{{ item.price }}</span>
+          <div>
+            <button @click="decreaseQuantity(index)" class="btn btn-danger">
+              -
+            </button>
+            <span>{{ item.quantity }}</span>
+            <button @click="increaseQuantity(index)" class="btn btn-success">
+              +
+            </button>
+          </div>
+        </li>
+      </ul>
+      <p v-if="cart.length">Totale: €{{ total }}</p>
+      <p v-else>Il carrello è vuoto</p>
     </div>
   </div>
 </template>
-  
-  
-  
-  <style scoped>
-.cart-toggle-btn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: #ff6600;
-  color: white;
-  padding: 10px 15px;
-  border-radius: 50%;
-  font-size: 16px;
-  cursor: pointer;
-}
 
+<style scoped>
 .cart-overlay {
   position: fixed;
   top: 0;
@@ -101,36 +62,11 @@ export default {
   width: 300px;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: flex-end;
 }
 
 .cart-content {
   background-color: white;
-  width: 80%;
   padding: 20px;
   overflow-y: auto;
 }
-
-.cart-content h3 {
-  margin-top: 0;
-}
-
-.cart-content ul {
-  list-style: none;
-  padding: 0;
-}
-
-.cart-content ul li {
-  margin-bottom: 10px;
-}
-
-.cart-content button {
-  background-color: red;
-  color: white;
-  border: none;
-  padding: 5px;
-  cursor: pointer;
-}
 </style>
-  

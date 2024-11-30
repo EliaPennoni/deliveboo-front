@@ -1,243 +1,110 @@
-<template>
-  <div>
-    <!-- Caricamento dei dettagli del ristorante -->
-    <div v-if="restaurant">
-      <h1>{{ restaurant.name }}</h1>
-      <h2>Piatti</h2>
-
-      <!-- Lista dei piatti -->
-      <div v-for="dish in restaurant.dishes" :key="dish.id" class="dish">
-        <h3>{{ dish.name }}</h3>
-        <p>{{ dish.description }}</p>
-        <p>Prezzo: €{{ dish.price }}</p>
-        <img :src="dish.image" :alt="dish.name" />
-        <button @click="addToCart(dish)">Aggiungi al Carrello</button>
-      </div>
-    </div>
-
-    <div v-else>
-      <p>Caricamento in corso...</p>
-    </div>
-
-    <!-- Messaggio di errore se i dati non sono caricati -->
-    <div v-if="error" class="error-message">
-      <p>Errore nel caricamento del ristorante. Riprova più tardi.</p>
-    </div>
-
-    <!-- Messaggio di errore se il cliente tenta di aggiungere piatti da un altro ristorante -->
-    <div v-if="addError" class="error-message">
-      <p>Non puoi aggiungere piatti da un altro ristorante al carrello!</p>
-    </div>
-
-    <!-- Carrello -->
-    <button @click="toggleCart" class="cart-toggle-btn">Carrello</button>
-
-    <div v-if="cartVisible" class="cart-overlay">
-      <div class="cart-content">
-        <h3>Il tuo Carrello</h3>
-
-        <ul>
-          <li v-for="(item, index) in cart" :key="index">
-            <span
-              >{{ item.name }} - {{ item.quantity }} x €{{ item.price }}</span
-            >
-            <button @click="removeItem(index)">Rimuovi</button>
-          </li>
-        </ul>
-
-        <div v-if="cart.length > 0">
-          <p>
-            <strong>Totale: €{{ total }}</strong>
-          </p>
-          <button @click="checkout">Checkout</button>
-        </div>
-        <div v-else>
-          <p>Il carrello è vuoto.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script>
 import axios from "axios";
 
 export default {
-  props: ["id"], // ID del ristorante
+  props: ["id"],
   data() {
     return {
-      restaurant: null, // Dettagli del ristorante
-      cart: JSON.parse(localStorage.getItem("cart")) || [], // Carrello dal localStorage
-      cartVisible: false, // Stato di visibilità del carrello
-      error: false, // Gestione errori
-      addError: false, // Gestione dell'errore quando si tenta di aggiungere piatti da un altro ristorante
+      restaurant: null,
+      cart: JSON.parse(localStorage.getItem("cart")) || [],
+      addError: false,
     };
   },
-  computed: {
-    total() {
-      return this.cart.reduce(
-        (acc, item) => acc + item.price * item.quantity,
-        0
-      );
-    },
-  },
-  created() {
-    if (!this.id) {
-      console.error("Errore: ID ristorante non definito!");
-      this.error = true;
-      return;
-    }
-
-    // Recupera i dettagli del ristorante
-    axios
-      .get(`http://127.0.0.1:8000/api/restaurants/${this.id}`)
-      .then((response) => {
-        if (
-          response.data &&
-          response.data.name &&
-          Array.isArray(response.data.dishes)
-        ) {
-          this.restaurant = response.data;
-        } else {
-          throw new Error("Dati del ristorante non validi.");
-        }
-      })
-      .catch((error) => {
-        console.error("Errore nel caricamento del ristorante:", error);
-        this.error = true;
-      });
-  },
   methods: {
-    toggleCart() {
-      this.cartVisible = !this.cartVisible; // Apre/chiude il carrello
+    fetchRestaurantDetails() {
+      axios
+        .get(`http://127.0.0.1:8000/api/restaurants/${this.id}`)
+        .then(({ data }) => {
+          this.restaurant = data;
+        })
+        .catch((error) => console.error("Errore:", error));
     },
     addToCart(dish) {
-      let cart = JSON.parse(localStorage.getItem("cart")) || [];
-      const currentRestaurantId = this.restaurant.id;
+      const restaurantId = this.restaurant.id;
 
-      // Se il carrello è vuoto, aggiungi il piatto
-      if (cart.length === 0) {
-        cart.push({
-          dishId: dish.id,
-          name: dish.name,
-          price: dish.price,
-          quantity: 1,
-          restaurantId: currentRestaurantId, // Aggiungi l'ID del ristorante al carrello
-        });
-        this.updateCart(cart); // Usa il nuovo metodo per aggiornare
-        console.log(`${dish.name} è stato aggiunto al carrello`);
-      } else {
-        // Se il carrello contiene già un piatto, controlla se è dello stesso ristorante
-        const cartRestaurantId = cart[0].restaurantId;
-        if (cartRestaurantId !== currentRestaurantId) {
-          // Mostra un messaggio di errore se il ristorante è diverso
-          this.addError = true;
-          setTimeout(() => {
-            this.addError = false; // Nascondi il messaggio dopo 3 secondi
-          }, 3000);
-        } else {
-          // Aggiungi il piatto al carrello se lo stesso ristorante
-          let item = cart.find((item) => item.dishId === dish.id);
-          if (item) {
-            item.quantity++;
-          } else {
-            cart.push({
-              dishId: dish.id,
-              name: dish.name,
-              price: dish.price,
-              quantity: 1,
-              restaurantId: currentRestaurantId, // Aggiungi l'ID del ristorante
-            });
-          }
-          this.updateCart(cart); // Usa il nuovo metodo per aggiornare
-          console.log(`${dish.name} è stato aggiunto al carrello`);
-        }
+      if (this.cart.length > 0 && this.cart[0].restaurantId !== restaurantId) {
+        this.addError = true;
+        setTimeout(() => (this.addError = false), 3000);
+        alert("Non puoi aggiungere piatti da un altro ristorante."); // Aggiunto un alert visibile
+        return;
       }
+
+      const existingItem = this.cart.find((item) => item.dishId === dish.id);
+      if (existingItem) {
+        existingItem.quantity++;
+      } else {
+        this.cart.push({ ...dish, quantity: 1, restaurantId });
+      }
+
+      this.syncCart();
     },
-    removeItem(index) {
-      this.cart.splice(index, 1); // Rimuovi il piatto dal carrello
-      this.updateCart(this.cart); // Usa il nuovo metodo per aggiornare
+    syncCart() {
+      localStorage.setItem("cart", JSON.stringify(this.cart));
+      this.$emit("updateCart", [...this.cart]);
     },
-    checkout() {
-      console.log("Procedi al checkout con questi articoli:", this.cart);
-    },
-    updateCart(cart) {
-      // Aggiorna il carrello in localStorage e forza il re-render
-      localStorage.setItem("cart", JSON.stringify(cart));
-      this.cart = JSON.parse(localStorage.getItem("cart")) || []; // Rileggi il carrello per aggiornare la UI
-    },
+  },
+  mounted() {
+    this.fetchRestaurantDetails();
   },
 };
 </script>
 
+
+<template>
+  <div class="container my-5 text-center">
+    <div v-if="restaurant">
+      <h1>{{ restaurant.name }}</h1>
+      <div class="row">
+        <div
+          class="col-12 col-sm-6 col-md-4"
+          v-for="dish in restaurant.dishes"
+          :key="dish.id"
+        >
+          <div class="card shadow mb-4 h-100">
+            <img class="card-img-top" :src="dish.image" :alt="dish.name" />
+            <div class="card-body d-flex flex-column">
+              <h3 class="ibm-plex-mono-bold mb-2">{{ dish.name }}</h3>
+              <p class="ibm-plex-mono-regular">{{ dish.description }}</p>
+              <p class="ibm-plex-mono-regular">Prezzo: €{{ dish.price }}</p>
+              <button class="btn btn-primary mt-3" @click="addToCart(dish)">
+                Aggiungi al carrello
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-else>
+      <p>Caricamento in corso...</p>
+    </div>
+
+    <!-- Messaggio di errore -->
+    <div v-if="addError" class="alert alert-danger mt-4">
+      Non puoi aggiungere piatti di un altro ristorante al carrello.
+    </div>
+  </div>
+</template>
+
 <style scoped>
-.dish {
-  border: 1px solid #ddd;
-  padding: 10px;
-  margin: 10px 0;
+.container {
+  border-radius: 30px;
 }
-
-button {
-  background-color: #ff6600;
-  color: white;
-  padding: 10px;
-  border: none;
-  cursor: pointer;
-}
-
-.cart-toggle-btn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: #ff6600;
-  color: white;
-  padding: 10px 15px;
-  border-radius: 50%;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.cart-overlay {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 300px;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+.card {
+  border-radius: 20px;
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  justify-content: space-between;
 }
-
-.cart-content {
-  background-color: white;
-  width: 80%;
-  padding: 20px;
-  overflow-y: auto;
+.card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 20px 20px 0 0;
 }
-
-.cart-content h3 {
-  margin-top: 0;
+.ibm-plex-mono-regular {
+  font-size: 15px;
 }
-
-.cart-content ul {
-  list-style: none;
-  padding: 0;
-}
-
-.cart-content ul li {
-  margin-bottom: 10px;
-}
-
-.cart-content button {
-  background-color: red;
-  color: white;
-  border: none;
-  padding: 5px;
-  cursor: pointer;
-}
-
-.error-message {
-  color: red;
-  margin-top: 20px;
+.ibm-plex-mono-bold {
+  font-size: 20px;
 }
 </style>

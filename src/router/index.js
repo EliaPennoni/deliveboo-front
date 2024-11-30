@@ -1,13 +1,19 @@
 import { createRouter, createWebHistory } from "vue-router";
-import RestaurantList from "../components/RestaurantList.vue"; // Lista ristoranti
+import AppMain from "../components/AppMain.vue";
+// import RestaurantList from "../components/RestaurantList.vue"; // Lista ristoranti
 import RestaurantDetails from "../components/RestaurantDetails.vue"; // Dettagli ristorante
 
 const routes = [
   {
-    path: "/", // Home
+    path: "/", // Questa è la rotta principale
     name: "home",
-    component: RestaurantList, // Mostra la lista dei ristoranti
+    component: AppMain, // Renderizza AppMain per la home
   },
+  // {
+  //   path: "/", // Home
+  //   name: "home",
+  //   component: RestaurantList, // Mostra la lista dei ristoranti
+  // },
   {
     path: "/restaurants/:id", // Rotta per il dettaglio di un ristorante
     name: "restaurantDetails",
