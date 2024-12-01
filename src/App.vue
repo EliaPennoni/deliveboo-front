@@ -5,26 +5,37 @@ import AppFooter from "./components/AppFooter.vue";
 export default {
   data() {
     return {
-      // count: 0
+      cart: JSON.parse(localStorage.getItem("cart")) || [], // Persistenza carrello
     };
+  },
+  computed: {
+    total() {
+      return this.cart.reduce(
+        (acc, item) => acc + item.price * item.quantity,
+        0
+      );
+    },
+  },
+  methods: {
+    updateCart(newCart) {
+      this.cart = newCart;
+      localStorage.setItem("cart", JSON.stringify(this.cart));
+    },
+    toggleCart() {
+      this.$emit("toggleCart");
+    },
   },
   components: {
     AppHeader,
-    AppMain,
     AppFooter,
-  },
-  methods: {
-    // incrementCount() {
-    //   this.count++;
-    // }
   },
 };
 </script>
 
 <template>
   <div>
-    <AppHeader />
-    <router-view />
+    <AppHeader :cart="cart" :total="total" @toggleCart="toggleCart" />
+    <router-view :cart="cart" @updateCart="updateCart" />
     <AppFooter />
   </div>
 </template>

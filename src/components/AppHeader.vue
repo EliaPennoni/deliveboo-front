@@ -2,40 +2,41 @@
 import Cart from "./Cart.vue";
 
 export default {
+  props: ["cart", "total"],
   components: {
     Cart,
   },
   data() {
     return {
       cartVisible: false,
-      cart: JSON.parse(localStorage.getItem("cart")) || [], // Carrello persistente
+      // cart: JSON.parse(localStorage.getItem("cart")) || [], // Carrello persistente
     };
   },
   computed: {
-    total() {
-      return this.cart.reduce(
-        (acc, item) => acc + item.price * item.quantity,
-        0
-      );
-    },
+    // total() {
+    //   return this.cart.reduce(
+    //     (acc, item) => acc + item.price * item.quantity,
+    //     0
+    //   );
+    // },
   },
   methods: {
     toggleCart() {
       this.cartVisible = !this.cartVisible;
     },
-    updateCart(newCart) {
-      this.cart = newCart;
-      localStorage.setItem("cart", JSON.stringify(this.cart)); // Persisti il carrello
-    },
-    addToCart(dish) {
-      const existingItem = this.cart.find((item) => item.id === dish.id);
-      if (existingItem) {
-        existingItem.quantity++; // Incrementa il contatore se il piatto è già nel carrello
-      } else {
-        this.cart.push({ ...dish, quantity: 1 }); // Aggiungi il piatto al carrello
-      }
-      this.updateCart([...this.cart]); // Sincronizza il carrello
-    },
+    // updateCart(newCart) {
+    //   this.cart = newCart;
+    //   localStorage.setItem("cart", JSON.stringify(this.cart)); // Persisti il carrello
+    // },
+    // addToCart(dish) {
+    //   const existingItem = this.cart.find((item) => item.id === dish.id);
+    //   if (existingItem) {
+    //     existingItem.quantity++; // Incrementa il contatore se il piatto è già nel carrello
+    //   } else {
+    //     this.cart.push({ ...dish, quantity: 1 }); // Aggiungi il piatto al carrello
+    //   }
+    //   this.updateCart([...this.cart]); // Sincronizza il carrello
+    // },
   },
 };
 </script>
@@ -63,8 +64,7 @@ export default {
       :cart="cart"
       :cartVisible="cartVisible"
       :total="total"
-      @toggleCart="toggleCart"
-      @updateCart="updateCart"
+      @updateCart="$emit('updateCart', $event)"
     />
   </nav>
 </template>

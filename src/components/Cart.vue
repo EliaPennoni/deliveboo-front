@@ -65,7 +65,7 @@ export default {
 }
 
 .cart-content {
-  background-color: white;
+  background-image: url(/public/images/background-pattern.png);
   padding: 20px;
   overflow-y: auto;
 }

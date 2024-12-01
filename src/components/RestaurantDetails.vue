@@ -2,45 +2,29 @@
 import axios from "axios";
 
 export default {
-  props: ["id"],
+  props: ["cart"],
   data() {
     return {
       restaurant: null,
-      cart: JSON.parse(localStorage.getItem("cart")) || [],
-      addError: false,
     };
   },
   methods: {
     fetchRestaurantDetails() {
       axios
-        .get(`http://127.0.0.1:8000/api/restaurants/${this.id}`)
+        .get(`http://127.0.0.1:8000/api/restaurants/${this.$route.params.id}`)
         .then(({ data }) => {
           this.restaurant = data;
         })
         .catch((error) => console.error("Errore:", error));
     },
     addToCart(dish) {
-      const restaurantId = this.restaurant.id;
-
-      if (this.cart.length > 0 && this.cart[0].restaurantId !== restaurantId) {
-        this.addError = true;
-        setTimeout(() => (this.addError = false), 3000);
-        alert("Non puoi aggiungere piatti da un altro ristorante."); // Aggiunto un alert visibile
-        return;
-      }
-
-      const existingItem = this.cart.find((item) => item.dishId === dish.id);
+      const existingItem = this.cart.find((item) => item.id === dish.id);
       if (existingItem) {
         existingItem.quantity++;
       } else {
-        this.cart.push({ ...dish, quantity: 1, restaurantId });
+        this.cart.push({ ...dish, quantity: 1 });
       }
-
-      this.syncCart();
-    },
-    syncCart() {
-      localStorage.setItem("cart", JSON.stringify(this.cart));
-      this.$emit("updateCart", [...this.cart]);
+      this.$emit("updateCart", [...this.cart]); // Sincronizza con il genitore
     },
   },
   mounted() {
