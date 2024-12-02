@@ -32,7 +32,9 @@ export default {
 <template>
   <div v-if="cartVisible" class="cart-overlay">
     <div class="cart-content">
-      <button @click="toggleCart" class="btn btn-secondary">Chiudi</button>
+      <button @click="toggleCart" class="button-exit-cart mb-4">
+        <i class="fa-solid fa-circle-xmark"></i>
+      </button>
       <h3>Carrello</h3>
       <ul>
         <li v-for="(item, index) in cart" :key="item.id">
@@ -59,14 +61,24 @@ export default {
   position: fixed;
   top: 0;
   right: 0;
-  width: 300px;
+  width: 600px;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .cart-content {
   background-image: url(/public/images/background-pattern.png);
   padding: 20px;
   overflow-y: auto;
+}
+
+.button-exit-cart{
+  background-color:#2f2f2f00;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.fa-circle-xmark{
+  color: #2f2f2f;
+  font-size: 25px;
 }
 </style>

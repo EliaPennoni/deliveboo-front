@@ -40,7 +40,7 @@ export default {
               <div>
                 <ul class="p-0 my-1 link-footer ibm-plex-mono-regular">
                   <li>
-                    <a href="#">Termin e condizioni</a>
+                    <a href="#">Termini e condizioni</a>
                   </li>
                   <li>
                     <a href="#">Informativa sulla privacy</a>
