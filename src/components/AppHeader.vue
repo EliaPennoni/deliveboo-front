@@ -41,7 +41,7 @@ export default {
 </script>
 
 <template>
-  <nav class="navbar navbar-expand-lg">
+  <nav class="navbar navbar-expand-lg shadow sticky-top">
     <div class="container">
       <a href="/" class="col-6">
         <img
@@ -69,12 +69,17 @@ export default {
   </nav>
 </template>
 
-<style scoped>
+<style>
 /* Logo */
 .logo-deliveboo {
   max-width: 100%;
   height: auto;
-  margin-top: 20px;
+  margin-top: 10px;
+}
+
+
+.navbar{
+  background-color: white;
 }
 
 /* Overlay del carrello */
