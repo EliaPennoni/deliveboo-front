@@ -9,6 +9,7 @@ export default {
       categories: [], // Lista delle categorie
       selectedCategories: [], // Categorie selezionate
       restaurants: [], // Lista ristoranti filtrati
+      allRestaurants: [], // Lista di tutti i ristoranti non filtrati
     };
   },
   methods: {
@@ -20,7 +21,8 @@ export default {
         const response = await axios.get(
           "http://127.0.0.1:8000/api/restaurants"
         );
-        this.restaurants = response.data; // Salva tutti i ristoranti
+        this.allRestaurants = response.data; // Salva tutti i ristoranti
+        this.restaurants = [...this.allRestaurants]; // Inizialmente, mostra tutti i ristoranti
       } catch (error) {
         console.error("Errore nel recupero dei ristoranti:", error);
       }
@@ -37,25 +39,23 @@ export default {
       }
     },
 
-    async filterRestaurants() {
+    // Filtra i ristoranti in base alle categorie selezionate
+    filterRestaurants() {
       if (this.selectedCategories.length === 0) {
-        // Se nessuna categoria è selezionata, mostra tutti i ristoranti
-        this.fetchAllRestaurants();
+        this.restaurants = [...this.allRestaurants]; // Se nessuna categoria è selezionata, mostra tutti i ristoranti
         return;
       }
 
-      try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000/api/restaurants/filter",
-          {
-            params: { category_id: this.selectedCategories },
-          }
+      // Filtra i ristoranti che hanno tutte le categorie selezionate
+      this.restaurants = this.allRestaurants.filter((restaurant) => {
+        const restaurantCategories = restaurant.categories.map((cat) => cat.id); // Categorie del ristorante
+        return this.selectedCategories.every((selectedCategory) =>
+          restaurantCategories.includes(selectedCategory)
         );
-        this.restaurants = response.data;
-      } catch (error) {
-        console.error("Errore nel filtraggio dei ristoranti:", error);
-      }
+      });
     },
+
+    // Naviga alla pagina dei dettagli del ristorante
     goToDetails(restaurantId) {
       this.$router.push({
         name: "restaurantDetails",
@@ -65,9 +65,8 @@ export default {
   },
 
   mounted() {
-    // Recupera le categorie
+    // Recupera le categorie e i ristoranti all'inizio
     this.fetchCategories();
-    // Recupera tutti i ristoranti inizialmente
     this.fetchAllRestaurants();
   },
 };
@@ -107,6 +106,8 @@ export default {
       </div>
     </div>
   </div>
+
+  <!-- Mostra i ristoranti filtrati -->
   <div
     class="background-pattern container my-5 shadow p-5 mb-5 bg-body-tertiary text-center"
   >
@@ -118,12 +119,8 @@ export default {
           </div>
           <div class="card-body text-center p-3">
             <div>
-              <h2 class="ibm-plex-mono-bold mb-1">
-                {{ restaurant.name }}
-              </h2>
-              <p class="ibm-plex-mono-regular mb-4">
-                {{ restaurant.address }}
-              </p>
+              <h2 class="ibm-plex-mono-bold mb-1">{{ restaurant.name }}</h2>
+              <p class="ibm-plex-mono-regular mb-4">{{ restaurant.address }}</p>
               <button
                 @click="goToDetails(restaurant.id)"
                 class="button-menu ibm-plex-mono-regular"
@@ -136,9 +133,9 @@ export default {
       </div>
     </div>
   </div>
-  <!-- </section> -->
 </template>
- <style scoped>
+
+<style scoped>
 .jumbotron {
   height: 850px;
   background-image: url(/images/jumbotron-deliveboo.png);
