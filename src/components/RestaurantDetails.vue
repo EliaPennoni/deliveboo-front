@@ -36,31 +36,36 @@ export default {
 
 <template>
   <div class="container my-5 text-center">
-
     <!--
       
     -->
     <div v-if="restaurant">
-
       <div class="card mb-3">
-      <div class="row g-0">
-        <div class="col-12 d-flex">
-          <div class="col-6 image-card-horizontal">
-            <img :src="restaurant.image" class="img-fluid" :alt="restaurant.name">
-          </div>
-          <div class="col-6">
-            <div class="card-body text-start">
-              <h5 class="my-title-card">{{ restaurant.name }}</h5>
-              <p class="card-text">{{ restaurant.address }}</p>
-              <p class="ibm-plex-mono-regular">Fame? Prendi i piati che ti ispirano di più e noi te lo portiamo!</p>
+        <div class="row g-0">
+          <div class="col-12 d-flex">
+            <div class="col-6 image-card-horizontal">
+              <img
+                :src="restaurant.image"
+                class="img-fluid"
+                :alt="restaurant.name"
+              />
+            </div>
+            <div class="col-6">
+              <div class="card-body text-start">
+                <h5 class="my-title-card">{{ restaurant.name }}</h5>
+                <p class="card-text">{{ restaurant.address }}</p>
+                <p class="ibm-plex-mono-regular">
+                  Fame? Prendi i piati che ti ispirano di più e noi te lo
+                  portiamo!
+                </p>
+              </div>
             </div>
           </div>
         </div>
-        
       </div>
-
-    </div>
-      <div class="background-pattern container my-5 shadow p-5 mb-5 bg-body-tertiary text-center">
+      <div
+        class="background-pattern container my-5 shadow p-5 mb-5 bg-body-tertiary text-center"
+      >
         <div class="row">
           <div
             class="col-12 col-sm-6 col-md-4"
@@ -73,7 +78,10 @@ export default {
                 <h3 class="ibm-plex-mono-bold mb-2">{{ dish.name }}</h3>
                 <p class="ibm-plex-mono-regular">{{ dish.description }}</p>
                 <p class="ibm-plex-mono-regular">Prezzo: €{{ dish.price }}</p>
-                <button class="button-menu ibm-plex-mono-regular mt-3" @click="addToCart(dish)">
+                <button
+                  class="button-menu ibm-plex-mono-regular mt-3"
+                  @click="addToCart(dish)"
+                >
                   Aggiungi al carrello
                 </button>
               </div>
@@ -127,8 +135,11 @@ export default {
   border: #2f2f2f solid 1px;
 }
 
-.my-title-card{
-  font-family: "neplus", serif; font-weight: 900; font-style: normal; font-size: 50px;
+.my-title-card {
+  font-family: "neplus", serif;
+  font-weight: 900;
+  font-style: normal;
+  font-size: 50px;
 }
 
 .background-pattern {
