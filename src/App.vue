@@ -6,6 +6,7 @@ export default {
   data() {
     return {
       cart: JSON.parse(localStorage.getItem("cart")) || [], // Persistenza carrello
+      cartVisible: false,
     };
   },
   computed: {
@@ -22,7 +23,7 @@ export default {
       localStorage.setItem("cart", JSON.stringify(this.cart));
     },
     toggleCart() {
-      this.$emit("toggleCart");
+      this.cartVisible = !this.cartVisible;
     },
   },
   components: {
@@ -34,7 +35,12 @@ export default {
 
 <template>
   <div>
-    <AppHeader :cart="cart" :total="total" @toggleCart="toggleCart" />
+    <AppHeader
+      :cart="cart"
+      :total="total"
+      :cartVisible="cartVisible"
+      @toggleCart="toggleCart"
+    />
     <router-view :cart="cart" @updateCart="updateCart" />
     <AppFooter />
   </div>

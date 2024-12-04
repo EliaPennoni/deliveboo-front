@@ -1,24 +1,25 @@
 import { createRouter, createWebHistory } from "vue-router";
 import AppMain from "../components/AppMain.vue";
-// import RestaurantList from "../components/RestaurantList.vue"; // Lista ristoranti
 import RestaurantDetails from "../components/RestaurantDetails.vue"; // Dettagli ristorante
+import PaymentPage from "../components/PaymentPage.vue"; // Pagina pagamento
 
 const routes = [
   {
-    path: "/", // Questa è la rotta principale
+    path: "/",
     name: "home",
-    component: AppMain, // Renderizza AppMain per la home
+    component: AppMain,
   },
-  // {
-  //   path: "/", // Home
-  //   name: "home",
-  //   component: RestaurantList, // Mostra la lista dei ristoranti
-  // },
   {
-    path: "/restaurants/:id", // Rotta per il dettaglio di un ristorante
+    path: "/restaurants/:id",
     name: "restaurantDetails",
-    component: RestaurantDetails, // Mostra i dettagli del ristorante
-    props: true, // Passa automaticamente i parametri come props
+    component: RestaurantDetails,
+    props: true,
+  },
+  {
+    path: "/payment",
+    name: "payment",
+    component: PaymentPage, // Pagina di pagamento
+    props: (route) => ({ total: route.query.total }), // Passa il totale come prop
   },
 ];
 

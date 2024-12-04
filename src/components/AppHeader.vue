@@ -2,15 +2,12 @@
 import Cart from "./Cart.vue";
 
 export default {
-  props: ["cart", "total"],
+  props: ["cart", "total", "cartVisible"],
   components: {
     Cart,
   },
   data() {
-    return {
-      cartVisible: false,
-      // cart: JSON.parse(localStorage.getItem("cart")) || [], // Carrello persistente
-    };
+    return {};
   },
   computed: {
     // total() {
@@ -22,7 +19,7 @@ export default {
   },
   methods: {
     toggleCart() {
-      this.cartVisible = !this.cartVisible;
+      this.$emit("toggleCart");
     },
     // updateCart(newCart) {
     //   this.cart = newCart;
@@ -64,7 +61,7 @@ export default {
       :cart="cart"
       :cartVisible="cartVisible"
       :total="total"
-      @updateCart="$emit('updateCart', $event)"
+      @toggleCart="$emit('toggleCart')"
     />
   </nav>
 </template>
@@ -77,8 +74,7 @@ export default {
   margin-top: 10px;
 }
 
-
-.navbar{
+.navbar {
   background-color: white;
 }
 

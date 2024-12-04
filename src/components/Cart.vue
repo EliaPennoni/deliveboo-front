@@ -25,6 +25,10 @@ export default {
       this.$emit("updateCart", [...this.cart]); // Sincronizza con il genitore
       localStorage.setItem("cart", JSON.stringify(this.cart)); // Persisti il carrello
     },
+    goToPayment() {
+      // Naviga alla pagina di pagamento passando il totale come query param
+      this.$router.push({ name: "payment", query: { total: this.total } });
+    },
   },
 };
 </script>
@@ -52,6 +56,10 @@ export default {
       </ul>
       <p v-if="cart.length">Totale: €{{ total }}</p>
       <p v-else>Il carrello è vuoto</p>
+      <div>
+        <!-- Carrello -->
+        <button @click="goToPayment">Paga</button>
+      </div>
     </div>
   </div>
 </template>
@@ -71,13 +79,13 @@ export default {
   overflow-y: auto;
 }
 
-.button-exit-cart{
-  background-color:#2f2f2f00;
+.button-exit-cart {
+  background-color: #2f2f2f00;
   padding: 10px;
   border-radius: 5px;
 }
 
-.fa-circle-xmark{
+.fa-circle-xmark {
   color: #2f2f2f;
   font-size: 25px;
 }

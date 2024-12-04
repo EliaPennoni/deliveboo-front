@@ -2,6 +2,8 @@
 import axios from "axios";
 
 export default {
+  props: ["cart"], // Dichiarazione del prop 'cart'
+  emits: ["updateCart"],
   data() {
     return {
       categories: [], // Lista delle categorie
@@ -10,6 +12,9 @@ export default {
     };
   },
   methods: {
+    updateCart(item) {
+      this.$emit("updateCart", item); // Emissione dell'evento
+    },
     async fetchAllRestaurants() {
       try {
         const response = await axios.get(
@@ -69,7 +74,7 @@ export default {
 </script>
 
 <template>
-   <section class="jumbotron">
+  <section class="jumbotron">
     <div class="title-jumbotron">
       <h1>Benvenuti su deliveBoo!</h1>
     </div>
@@ -82,7 +87,7 @@ export default {
       Guarda tra la selezione dei nostri ristoranti e ordina da quello che fa
       più al caso tuo!
     </p>
-    
+
     <div class="category-filter-container filter-box">
       <div
         v-for="category in categories"
@@ -101,31 +106,10 @@ export default {
         </label>
       </div>
     </div>
-
-    <!-- Lista Ristoranti -->
-    <!-- <div v-if="restaurants.length > 0">
-      <div v-for="restaurant in restaurants" :key="restaurant.id">
-        <h3>{{ restaurant.name }}</h3>
-        <p>{{ restaurant.address }}</p>
-        <button @click="goToDetails(restaurant.id)" class="btn btn-primary">
-          Visualizza Piatti
-        </button>
-      </div>
-    </div>
-    <div v-else>
-      <p>Nessun ristorante trovato per questa categoria.</p>
-    </div> -->
   </div>
-  <!-- </template>
-
-
-<template>
-  <section> -->
   <div
     class="background-pattern container my-5 shadow p-5 mb-5 bg-body-tertiary text-center"
   >
-    
-    
     <div class="row">
       <div class="col-4" v-for="restaurant in restaurants" :key="restaurant.id">
         <div class="card shadow mb-5">
@@ -155,8 +139,6 @@ export default {
   <!-- </section> -->
 </template>
  <style scoped>
-
-
 .jumbotron {
   height: 850px;
   background-image: url(/images/jumbotron-deliveboo.png);
@@ -218,7 +200,7 @@ img {
   border: #2f2f2f solid 1px;
 }
 
-.filters-box > *{
+.filters-box > * {
   border: #2f2f2f solid 1px;
   border-radius: 10px;
   padding: 5px;
