@@ -1,43 +1,62 @@
 <template>
-  <div v-if="cartVisible" class="cart-overlay">
-    <div class="cart-content">
-      <button @click="toggleCart" class="button-exit-cart mb-4">
-        <i class="fa-solid fa-circle-xmark"></i>
-      </button>
-      <h3>Carrello</h3>
-
-      <!-- Mostra il messaggio di errore se presente -->
-      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-
-      <ul>
-        <li v-for="(item, index) in cart" :key="item.id">
-          <span>{{ item.name }} - €{{ item.price }}</span>
-          <div>
-            <button @click="decreaseQuantity(index)" class="btn btn-danger">
-              -
+    <div v-if="cartVisible" class="cart-overlay">
+        <div class="cart-content container-fluid">
+            <button @click="toggleCart" class="button-exit-cart mb-4">
+                <i class="fa-solid fa-circle-xmark"></i>
             </button>
-            <span>{{ item.quantity }}</span>
-            <button @click="increaseQuantity(index)" class="btn btn-success">
-              +
-            </button>
-          </div>
-        </li>
-      </ul>
+            <div class="d-flex my-2">
+                <h3 class="text-body">Carrello</h3>
+                <div>
+                    <button @click="clearCart" class="btn btn-warning mb-2">Svuota Carrello</button>
+                </div>
+            </div>
 
-      <p v-if="cart.length">Totale: €{{ total }}</p>
-      <p v-else>Il carrello è vuoto</p>
+            <!-- Mostra il messaggio di errore se presente -->
+            <p v-if="errorMessage" class="error-message m-3">{{ errorMessage }}</p>
 
-      <div>
-        <button
-          @click="goToPayment"
-          :disabled="!cart.length"
-          class="pay-button"
-        >
-          Paga
-        </button>
-      </div>
+            <ul class="my-3">
+                <li v-for="(item, index) in cart" :key="item.id">
+                    <span class="text-body">
+                        {{ item.name }} - € {{ item.price }}
+                    </span>
+
+                    <div class="mb-4 d-flex justify-content-start gap-3">
+                        <button @click="decreaseQuantity(index)" class="btn btn-danger">
+                            -
+                        </button>
+                        <span class="text-secondary">
+                            {{ item.quantity }}
+                        </span>
+                        <button @click="increaseQuantity(index)" class="btn btn-success m-0">
+                            +
+                        </button>
+                    </div>
+                </li>
+            </ul>
+
+            <p v-if="cart.length" class="text-body fs-5">
+                <b>
+                    Totale: € {{ total }}
+                </b>
+            </p>
+
+            <p v-else class="text-body">
+                <b>
+                    Il carrello è vuoto
+                </b>
+            </p>
+
+            <div>
+                <button
+                @click="goToPayment"
+                :disabled="!cart.length"
+                class="pay-button"
+                >
+                Paga
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -79,6 +98,11 @@ export default {
         this.cart.splice(index, 1); // Rimuove il piatto se la quantità è zero
       }
       this.syncCart();
+    },
+
+    clearCart() {
+        this.cart = []; // Svuota il carrello
+        this.syncCart();
     },
 
     syncCart() {
