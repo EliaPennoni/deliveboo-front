@@ -1,13 +1,20 @@
 import { createRouter, createWebHistory } from "vue-router";
 import AppMain from "../components/AppMain.vue";
-import RestaurantDetails from "../components/RestaurantDetails.vue"; // Dettagli ristorante
-import PaymentPage from "../components/PaymentPage.vue"; // Pagina pagamento
+import RestaurantDetails from "../components/RestaurantDetails.vue";
+import PaymentPage from "../components/PaymentPage.vue";
+import OrderConfirmation from "../components/OrderConfirmation.vue";
+import RestaurantList from "../components/RestaurantList.vue";
 
 const routes = [
   {
     path: "/",
     name: "home",
     component: AppMain,
+  },
+  {
+    path: "/restaurants",
+    name: "restaurants",
+    component: RestaurantList,
   },
   {
     path: "/restaurants/:id",
@@ -18,8 +25,14 @@ const routes = [
   {
     path: "/payment",
     name: "payment",
-    component: PaymentPage, // Pagina di pagamento
-    props: (route) => ({ total: route.query.total }), // Passa il totale come prop
+    component: PaymentPage,
+    props: (route) => ({ total: route.query.total }),
+  },
+  {
+    path: "/order-confirmation",
+    name: "orderConfirmation",
+    component: OrderConfirmation,
+    props: (route) => ({ transactionId: route.query.transactionId }),
   },
 ];
 

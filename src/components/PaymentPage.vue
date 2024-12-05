@@ -123,21 +123,30 @@ export default {
           name: this.name,
           email: this.email,
           telephone: this.telephone,
+          cart: this.cart, // Aggiungi il carrello alla richiesta
         });
 
         if (response.data.success) {
           console.log("Pagamento completato con successo");
+
+          // Redirige all'OrderConfirmation.vue con il transactionId
+          this.$router.push({
+            name: "orderConfirmation",
+            query: { transactionId: response.data.transactionId },
+          });
         } else {
           console.error(
             "Errore durante il pagamento:",
             error.response ? error.response.data : error
           );
+          alert("C'è stato un errore nel completamento del pagamento.");
         }
       } catch (error) {
         console.error(
           "Errore durante il pagamento:",
           error.response ? error.response.data : error
         );
+        alert("C'è stato un errore nel completamento del pagamento.");
       }
     },
   },
