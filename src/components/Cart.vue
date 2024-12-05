@@ -5,11 +5,26 @@ export default {
     cartVisible: Boolean,
     total: Number,
   },
+  data() {
+    return {
+      errorMessage: "", // Variabile per il messaggio di errore
+    };
+  },
   methods: {
     toggleCart() {
       this.$emit("toggleCart");
     },
     increaseQuantity(index) {
+      // Controlla se il piatto che si sta cercando di aggiungere proviene dallo stesso ristorante
+      const firstRestaurantId = this.cart[0]?.restaurant_id;
+      if (
+        firstRestaurantId &&
+        this.cart[index].restaurant_id !== firstRestaurantId
+      ) {
+        this.errorMessage = "Non puoi aggiungere piatti da ristoranti diversi.";
+        return;
+      }
+
       this.cart[index].quantity++;
       this.syncCart();
     },
@@ -24,6 +39,7 @@ export default {
     syncCart() {
       this.$emit("updateCart", [...this.cart]); // Sincronizza con il genitore
       localStorage.setItem("cart", JSON.stringify(this.cart)); // Persisti il carrello
+      this.errorMessage = ""; // Resetta l'errore quando si sincronizza il carrello
     },
     goToPayment() {
       // Naviga alla pagina di pagamento passando il totale come query param
@@ -40,6 +56,10 @@ export default {
         <i class="fa-solid fa-circle-xmark"></i>
       </button>
       <h3>Carrello</h3>
+
+      <!-- Mostra il messaggio di errore se presente -->
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+
       <ul>
         <li v-for="(item, index) in cart" :key="item.id">
           <span>{{ item.name }} - €{{ item.price }}</span>
@@ -65,6 +85,12 @@ export default {
 </template>
 
 <style scoped>
+.error-message {
+  color: red;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
 .cart-overlay {
   position: fixed;
   top: 0;

@@ -6,6 +6,7 @@ export default {
   data() {
     return {
       restaurant: null,
+      addError: false, // Variabile per gestire l'errore
     };
   },
   methods: {
@@ -18,12 +19,26 @@ export default {
         .catch((error) => console.error("Errore:", error));
     },
     addToCart(dish) {
+      // Controlla se il piatto appartiene allo stesso ristorante
+      const existingRestaurantId = this.cart.length
+        ? this.cart[0].restaurant_id
+        : null;
+      if (existingRestaurantId && existingRestaurantId !== dish.restaurant_id) {
+        this.addError = true; // Imposta l'errore
+        return;
+      }
+
       const existingItem = this.cart.find((item) => item.id === dish.id);
       if (existingItem) {
         existingItem.quantity++;
       } else {
-        this.cart.push({ ...dish, quantity: 1 });
+        this.cart.push({
+          ...dish,
+          quantity: 1,
+          restaurant_id: dish.restaurant_id,
+        });
       }
+      this.addError = false; // Pulisce l'errore se il piatto è aggiunto correttamente
       this.$emit("updateCart", [...this.cart]); // Sincronizza con il genitore
     },
   },
@@ -33,12 +48,8 @@ export default {
 };
 </script>
 
-
 <template>
   <div class="container my-5 text-center">
-    <!--
-      
-    -->
     <div v-if="restaurant">
       <div class="card mb-3">
         <div class="row g-0">
