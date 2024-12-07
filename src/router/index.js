@@ -1,18 +1,38 @@
 import { createRouter, createWebHistory } from "vue-router";
-import RestaurantList from "../components/RestaurantList.vue"; // Lista ristoranti
-import RestaurantDetails from "../components/RestaurantDetails.vue"; // Dettagli ristorante
+import AppMain from "../components/AppMain.vue";
+import RestaurantDetails from "../components/RestaurantDetails.vue";
+import PaymentPage from "../components/PaymentPage.vue";
+import OrderConfirmation from "../components/OrderConfirmation.vue";
+import RestaurantList from "../components/RestaurantList.vue";
 
 const routes = [
   {
-    path: "/", // Home
+    path: "/",
     name: "home",
-    component: RestaurantList, // Mostra la lista dei ristoranti
+    component: AppMain,
   },
   {
-    path: "/restaurants/:id", // Rotta per il dettaglio di un ristorante
+    path: "/restaurants",
+    name: "restaurants",
+    component: RestaurantList,
+  },
+  {
+    path: "/restaurants/:id",
     name: "restaurantDetails",
-    component: RestaurantDetails, // Mostra i dettagli del ristorante
-    props: true, // Passa automaticamente i parametri come props
+    component: RestaurantDetails,
+    props: true,
+  },
+  {
+    path: "/payment",
+    name: "payment",
+    component: PaymentPage,
+    props: (route) => ({ total: route.query.total }),
+  },
+  {
+    path: "/order-confirmation",
+    name: "orderConfirmation",
+    component: OrderConfirmation,
+    props: (route) => ({ transactionId: route.query.transactionId }),
   },
 ];
 

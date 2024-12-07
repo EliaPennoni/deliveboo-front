@@ -1,125 +1,156 @@
 <script>
-import axios from "axios";
+import Cart from "./Cart.vue";
 
 export default {
-    data(){
-        return {
-            restaurants: [],
-            searchQuery: ""
-        };
+    props: ["cart", "total", "cartVisible"],
+    components: {
+        Cart,
+    },
+    data() {
+        return {};
     },
     computed: {
-        // Filtro dinamico in base alla query di ricerca
-        filteredRestaurant() {
-        // Se la ricerca è vuota, non mostrare nulla
-        if (this.searchQuery.trim() === "") {
-            return [];
+        // total() {
+        //   return this.cart.reduce(
+        //     (acc, item) => acc + item.price * item.quantity,
+        //     0
+        //   );
+        // },
+
+        cartCount() {
+            return this.cart.reduce((acc, item) => acc + item.quantity, 0);
         }
-        return this.restaurants.filter(restaurant =>
-            restaurant.name.toLowerCase().includes(this.searchQuery.toLowerCase())
-        );
-    }
-    },
-    mounted() {
-        // Recupera i dati dal backend al momento del montaggio del componente
-        this.fetchData();
     },
     methods: {
-        // Funzione per ottenere i dati dal backend
-        fetchData() {
-        axios
-            .get("http://127.0.0.1:8000/api/restaurants")
-            .then((response) => {
-            this.restaurants = response.data;
-            })
-            .catch((error) => {
-            console.error("Errore nel recupero dei dati:", error);
-            });
+        toggleCart() {
+        this.$emit("toggleCart");
         },
-
-        onSearch() {
-            // Potresti voler fare qualcosa quando l'utente digita
-            console.log("Ricerca attiva:", this.searchQuery);
-        }
-    }
-  
+        // updateCart(newCart) {
+        //   this.cart = newCart;
+        //   localStorage.setItem("cart", JSON.stringify(this.cart)); // Persisti il carrello
+        // },
+        // addToCart(dish) {
+        //   const existingItem = this.cart.find((item) => item.id === dish.id);
+        //   if (existingItem) {
+        //     existingItem.quantity++; // Incrementa il contatore se il piatto è già nel carrello
+        //   } else {
+        //     this.cart.push({ ...dish, quantity: 1 }); // Aggiungi il piatto al carrello
+        //   }
+        //   this.updateCart([...this.cart]); // Sincronizza il carrello
+        // },
+    },
 };
 </script>
 
 <template>
-<nav class="navbar navbar-expand-lg">
-    <div class="container">
-
-        <div class="collapse navbar-collapse row d-flex justify-content-between">
-            <div class="col-6">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Menù</a>
-                    </li>
-                </ul>
+    <nav class="navbar navbar-expand-lg shadow sticky-top">
+        <div class="container">
+            <a href="/" class="col-6">
+                <img
+                class="logo-deliveboo"
+                src="/images/Logo-deliveBoo.svg"
+                alt="deliveBoo-logo"
+                />
+            </a>
+            <div class="d-flex justify-content-end">
+                <a href="http://127.0.0.1:8000/" class="btn btn-dark text-white">
+                    Accedi o Registrati
+                </a>
+                <button @click="toggleCart" class="btn btn-light text-dark ml-3 position-relative">
+                    Carrello
+                    <span
+                    v-if="cartCount > 0"
+                    class="badge badge-danger position-absolute top-0 start-100 translate-middle border border-light rounded-circle"
+                    >
+                        {{ cartCount }}
+                    </span>
+                </button>
             </div>
-            
-
-            <!--Searchbar-->
-            <div class="col-6">
-                <form class="d-flex" role="search">
-                    <input v-model="searchQuery" @input="onSearch" class="form-control me-2" type="text" placeholder="Search" aria-label="Search">
-                    <button @click="searchRestaurant" class="btn btn-outline-success" type="submit">Search</button>
-                </form>
-
-                <!-- Lista degli items con condizione di visibilità -->
-                <div class="results" v-if="filteredRestaurant.length > 0">
-                    <ul>
-                        <li v-for="restaurant in filteredRestaurant" :key="restaurant.id">{{ restaurant.name }}</li>
-                    </ul>
-                </div>
-
-                <!-- Messaggio di no results -->
-                <div v-else-if="searchQuery">
-                    <p>Nessun risultato trovato.</p>
-                </div>
-                
-            </div>
-           
         </div>
-    </div>
-</nav>
+        <Cart
+        :cart="cart"
+        :cartVisible="cartVisible"
+        :total="total"
+        @toggleCart="$emit('toggleCart')"
+        />
+    </nav>
 </template>
 
-<style scoped>
+<style>
+.badge {
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 5px 10px;
+  font-size: 0.8rem;
+}
+
+/* Logo */
+.logo-deliveboo {
+  max-width: 100%;
+  height: auto;
+  margin-top: 10px;
+}
+
 .navbar {
-  background-color: #E9F8F5;
-  color: #011632;
-  padding: 10px;
-  text-align: center;
+  background-color: white;
 }
 
-.search-input {
-  padding: 8px;
-  font-size: 16px;
-  width: 250px;
-  border-radius: 5px;
+/* Overlay del carrello */
+.cart-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: flex-end;
+  z-index: 1000;
 }
 
-.results {
-  margin-top: 20px;
-  padding: 0 20px;
+.cart-content {
+  background-color: white;
+  width: 80%;
+  padding: 20px;
+  overflow-y: auto;
 }
 
-.results ul {
-  list-style-type: none;
+.cart-content h3 {
+  margin-top: 0;
+}
+
+.cart-content ul {
+  list-style: none;
   padding: 0;
 }
 
-.results li {
-  margin: 5px 0;
+.cart-content button {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px;
+  cursor: pointer;
 }
 
-p {
-  text-align: center;
-  color: red;
+/* Flexbox per l'header */
+.navbar .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar .d-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar .d-flex .col-6 {
+  flex: 1;
+}
+
+.navbar .btn {
+  margin-left: 15px;
 }
 </style>

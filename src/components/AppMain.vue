@@ -1,19 +1,22 @@
 <script>
 // import components
-import RestaurantList from './RestaurantList.vue';
+import RestaurantList from "./RestaurantList.vue";
 
 export default {
-    components: {
-        RestaurantList
-    }
-
-}
+  name: "AppMain",
+  components: {
+    RestaurantList,
+  },
+};
 </script>
 
 <template>
+  <!--Header con jumbotron-->
+ 
 
-    <RestaurantList />
+  <RestaurantList />
 </template>
-<style>
 
+
+<style>
 </style>
