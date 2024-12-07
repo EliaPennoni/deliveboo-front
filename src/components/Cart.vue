@@ -6,9 +6,16 @@
             </button>
             <div class="d-flex my-2">
                 <h3 class="text-body">Carrello</h3>
-                <div>
+                <!-- <div>
                     <button @click="clearCart" class="btn btn-warning mb-2">Svuota Carrello</button>
-                </div>
+                </div> -->
+                <button 
+                    @click="clearCart" 
+                    class="btn btn-warning mb-2"
+                    :disabled="!cart.length"
+                >
+                    Svuota Carrello
+                </button>
             </div>
 
             <!-- Mostra il messaggio di errore se presente -->
@@ -101,8 +108,11 @@ export default {
     },
 
     clearCart() {
-        this.cart = []; // Svuota il carrello
-        this.syncCart();
+        if (window.confirm("Sei sicuro di voler svuotare il carrello?")) {
+            // Svuota il carrello e sincronizza con il genitore
+            this.cart.length = 0; // Rimuove tutti gli elementi
+            this.syncCart();
+        }
     },
 
     syncCart() {
