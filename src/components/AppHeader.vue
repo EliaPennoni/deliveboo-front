@@ -43,8 +43,8 @@ export default {
 </script>
 
 <template>
-    <nav class="navbar navbar-expand-lg shadow sticky-top">
-        <div class="container">
+    <nav class="navbar navbar-expand-lg shadow sticky-top ">
+        <div class="container d-md-flex justify-content-center">
             <a href="/" class="col-6">
                 <img
                 class="logo-deliveboo"
@@ -52,12 +52,16 @@ export default {
                 alt="deliveBoo-logo"
                 />
             </a>
+            
             <div class="d-flex justify-content-end">
-                <a href="http://127.0.0.1:8000/" class="btn btn-dark text-white">
-                    Accedi o Registrati
+                <a href="http://127.0.0.1:8000/" class="d-lg-block d-md-none ibm-plex-mono-regular button-menu text-white">
+                    Accedi/Registrati
                 </a>
-                <button @click="toggleCart" class="btn btn-light text-dark ml-3 position-relative">
-                    Carrello
+
+
+
+                <button @click="toggleCart" class="button-menu text-dark ml-3 ms-3 position-relative">
+                    <i class="p-1 fa-solid fa-cart-shopping text-white"></i>
                     <span
                     v-if="cartCount > 0"
                     class="badge badge-danger position-absolute top-0 start-100 translate-middle border border-light rounded-circle"
@@ -85,6 +89,18 @@ export default {
   font-size: 0.8rem;
 }
 
+.button-menu {
+  background-color: #2f2f2f;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  text-decoration: none;
+}
+.button-menu:hover {
+  background-color: #fac200;
+  border: #2f2f2f solid 1px;
+}
 /* Logo */
 .logo-deliveboo {
   max-width: 100%;
@@ -153,4 +169,5 @@ export default {
 .navbar .btn {
   margin-left: 15px;
 }
+
 </style>

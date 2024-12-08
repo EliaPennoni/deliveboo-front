@@ -5,7 +5,7 @@ export default {
 </script>
 
 <template>
-  <footer class="bg-dark text-light py-4">
+  <footer class="bg-dark text-light py-5">
     <div class="container">
       <!-- Prima riga: Link e Logo -->
       <div class="row">
@@ -13,27 +13,27 @@ export default {
         <div class="col-12 col-md-8">
           <div class="row">
             <div class="col-12 col-sm-4 mb-3">
-              <h5>Scopri DeliveBoo</h5>
+              <h5 class="ibm-plex-mono-semibold">DeliveBoo</h5>
               <ul class="list-unstyled">
-                <li><a href="#" class="text-light">Chi siamo</a></li>
-                <li><a href="#" class="text-light">Ristoranti</a></li>
-                <li><a href="#" class="text-light">Diventa parte del team!</a></li>
-                <li><a href="#" class="text-light">Diventa nostro partner!</a></li>
+                <li><a href="#" class="ibm-plex-mono-regular text-light">Chi siamo</a></li>
+                <li><a href="#" class="ibm-plex-mono-regular text-light">Ristoranti</a></li>
+                <li><a href="#" class="ibm-plex-mono-regular text-light">Diventa parte del team!</a></li>
+                <li><a href="#" class="ibm-plex-mono-regular text-light">Diventa nostro partner!</a></li>
               </ul>
             </div>
             <div class="col-12 col-sm-4 mb-3">
-              <h5>Informazioni Legali</h5>
+              <h5 class="ibm-plex-mono-semibold">Informazioni Legali</h5>
               <ul class="list-unstyled">
-                <li><a href="#" class="text-light">Termini e condizioni</a></li>
-                <li><a href="#" class="text-light">Informativa sulla privacy</a></li>
-                <li><a href="#" class="text-light">Cookies</a></li>
+                <li><a href="#" class="ibm-plex-mono-regular text-light">Termini e condizioni</a></li>
+                <li><a href="#" class="ibm-plex-mono-regular text-light">Informativa sulla privacy</a></li>
+                <li><a href="#" class="ibm-plex-mono-regular text-light">Cookies</a></li>
               </ul>
             </div>
             <div class="col-12 col-sm-4 mb-3">
-              <h5>Assistenza</h5>
+              <h5 class="ibm-plex-mono-semibold">Assistenza</h5>
               <ul class="list-unstyled">
-                <li><a href="#" class="text-light">Contattaci</a></li>
-                <li><a href="#" class="text-light">FAQ</a></li>
+                <li><a href="#" class="ibm-plex-mono-regular text-light">Contattaci</a></li>
+                <li><a href="#" class="ibm-plex-mono-regular text-light">FAQ</a></li>
               </ul>
             </div>
           </div>

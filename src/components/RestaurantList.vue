@@ -74,7 +74,7 @@ export default {
 
 <template>
   <div class="container my-5">
-    <h1 class="text-center mb-4">Ristoranti</h1>
+    <h1 class="ibm-plex-mono-bold text-center fs-1 mb-4">Ristoranti</h1>
     <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
       <div v-for="category in categories" :key="category.id" class="form-check">
         <input
@@ -84,27 +84,30 @@ export default {
           v-model="selectedCategories"
           @change="filterRestaurants"
         />
-        <label class="form-check-label">{{ category.name }}</label>
+        <label class="ibm-plex-mono-regular form-check-label">{{ category.name }}</label>
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-12 col-sm-6 col-md-4 mb-4" v-for="restaurant in restaurants" :key="restaurant.id">
-        <div class="card">
-          <img :src="restaurant.image" class="card-img-top img-fluid" alt="Ristorante">
-          <div class="card-body text-center">
-            <h5 class="card-title">{{ restaurant.name }}</h5>
-            <p class="card-text">{{ restaurant.address }}</p>
-            <button
-              @click="goToDetails(restaurant.id)"
-              class="btn btn-primary w-100"
-            >
-              Visualizza Piatti
-            </button>
+    <div class="card p-4 background-pattern">
+      <div class="row">
+        <div class="col-12 col-sm-6 col-md-4 mb-4" v-for="restaurant in restaurants" :key="restaurant.id">
+          <div class="card ">
+            <img :src="restaurant.image" class="card-img-top img-fluid" alt="Ristorante">
+            <div class="card-body text-center">
+              <h5 class="ibm-plex-mono-semibold card-title">{{ restaurant.name }}</h5>
+              <p class="ibm-plex-mono-regular card-text">{{ restaurant.address }}</p>
+              <button
+                @click="goToDetails(restaurant.id)"
+                class="button-menu ibm-plex-mono-regular w-100"
+              >
+                Visualizza Piatti
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    
   </div>
 </template>
 
@@ -122,6 +125,11 @@ export default {
   text-align: center;
   color: #2f2f2f;
   padding-top: 80px;
+}
+
+.background-pattern {
+  background-image: url(/images/background-pattern.png);
+  background-size: contain;
 }
 
 .category-filter-container {
@@ -144,10 +152,7 @@ h3 {
 .container {
   border-radius: 30px;
 }
-.background-pattern {
-  background-image: url(/images/background-pattern.png);
-  background-size: contain;
-}
+
 .restaurant {
   border: 1px solid #ddd;
   padding: 10px;
@@ -199,5 +204,18 @@ img {
   font-style: normal;
   color: #2f2f2f;
   font-size: 30px;
+}
+
+.button-menu {
+  background-color: #2f2f2f;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+}
+
+.button-menu:hover {
+  background-color: #fac200;
+  border: #2f2f2f solid 1px;
 }
 </style>
