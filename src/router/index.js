@@ -24,9 +24,9 @@ const routes = [
   },
   {
     path: "/payment",
-    name: "payment",
+    name: "paymentPage", // Assicurati che questo sia "paymentPage"
     component: PaymentPage,
-    props: (route) => ({ total: route.query.total }),
+    props: (route) => ({ total: route.query.total }), // Passa "total" come prop
   },
   {
     path: "/order-confirmation",

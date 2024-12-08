@@ -11,12 +11,53 @@ export default {
 </script>
 
 <template>
-  <!--Header con jumbotron-->
- 
+  <div>
+    <!-- Jumbotron -->
+    <section class="jumbotron d-flex align-items-center">
+      <div class="container text-center">
+        <h1 class="display-4 text-dark fw-bold">Benvenuti su DeliveBoo!</h1>
+        
+      </div>
+    </section>
 
-  <RestaurantList />
+    <!-- Lista Ristoranti -->
+    <RestaurantList />
+  </div>
 </template>
 
+<style scoped>
+/* Jumbotron Styles */
+.jumbotron {
+  background-image: url('/images/jumbotron-deliveboo.png');
+  background-size: cover;
+  background-position: center;
+  height: 80vh;
+  color: #2f2f2f;
+}
 
-<style>
+.jumbotron h1 {
+  font-family: "neplus", serif;
+  font-size: 3rem;
+}
+
+.jumbotron p {
+  font-size: 1.2rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .jumbotron {
+    height: auto;
+    padding: 2rem 1rem;
+    background-image: url('/images/jumbotron-deliveboo.png'); /* Immagine per mobile */
+  }
+
+  .jumbotron h1 {
+    font-size: 2rem;
+  }
+
+  .jumbotron p {
+    font-size: 1rem;
+  }
+}
 </style>

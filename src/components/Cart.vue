@@ -1,173 +1,127 @@
 <template>
-    <div v-if="cartVisible" class="cart-overlay">
-        <div class="cart-content container-fluid">
-            <button @click="toggleCart" class="button-exit-cart mb-4">
-                <i class="fa-solid fa-circle-xmark"></i>
-            </button>
-            <div class="d-flex my-2">
-                <h3 class="text-body">Carrello</h3>
-                <!-- <div>
-                    <button @click="clearCart" class="btn btn-warning mb-2">Svuota Carrello</button>
-                </div> -->
-                <button 
-                    @click="clearCart" 
-                    class="btn btn-warning mb-2"
-                    :disabled="!cart.length"
-                >
-                    Svuota Carrello
-                </button>
+  <div v-if="cartVisible" class="cart-overlay">
+    <div class="cart-content">
+      <!-- Header con pulsanti -->
+      <div class="cart-header d-flex justify-content-between align-items-center">
+        <button @click="toggleCart" class="button-exit-cart">
+          <i class="fa-solid fa-circle-xmark"></i>
+        </button>
+        <h3>Carrello</h3>
+        <button @click="clearCart" class="btn btn-warning">
+          Svuota Carrello
+        </button>
+      </div>
+
+      <div class="my-2">
+        <ul>
+          <li v-for="(item, index) in cart" :key="item.id">
+            {{ item.name }} - €{{ item.price }} x {{ item.quantity }}
+            <div class="d-flex gap-2 mt-2">
+              <button @click="decreaseQuantity(index)" class="btn btn-danger">
+                -
+              </button>
+              <span>{{ item.quantity }}</span>
+              <button @click="increaseQuantity(index)" class="btn btn-success">
+                +
+              </button>
             </div>
+          </li>
+        </ul>
+      </div>
 
-            <!-- Mostra il messaggio di errore se presente -->
-            <p v-if="errorMessage" class="error-message m-3">{{ errorMessage }}</p>
-
-            <ul class="my-3">
-                <li v-for="(item, index) in cart" :key="item.id">
-                    <span class="text-body">
-                        {{ item.name }} - € {{ item.price }}
-                    </span>
-
-                    <div class="mb-4 d-flex justify-content-start gap-3">
-                        <button @click="decreaseQuantity(index)" class="btn btn-danger">
-                            -
-                        </button>
-                        <span class="text-secondary">
-                            {{ item.quantity }}
-                        </span>
-                        <button @click="increaseQuantity(index)" class="btn btn-success m-0">
-                            +
-                        </button>
-                    </div>
-                </li>
-            </ul>
-
-            <p v-if="cart.length" class="text-body fs-5">
-                <b>
-                    Totale: € {{ total }}
-                </b>
-            </p>
-
-            <p v-else class="text-body">
-                <b>
-                    Il carrello è vuoto
-                </b>
-            </p>
-
-            <div>
-                <button
-                @click="goToPayment"
-                :disabled="!cart.length"
-                class="pay-button"
-                >
-                Paga
-                </button>
-            </div>
-        </div>
+      <div>
+        <p>Totale: €{{ total }}</p>
+        <button
+          @click="goToPayment"
+          :disabled="!cart.length"
+          class="pay-button"
+        >
+          Paga
+        </button>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
 export default {
-  props: {
-    cart: Array,
-    cartVisible: Boolean,
-    total: Number,
-  },
-  data() {
-    return {
-      errorMessage: "", // Variabile per il messaggio di errore
-    };
-  },
+  props: ["cart", "cartVisible", "total"],
   methods: {
     toggleCart() {
-      this.$emit("toggleCart");
+      this.$emit("toggleCart"); // Chiude il carrello
     },
-
+    clearCart() {
+      this.cart.splice(0, this.cart.length); // Svuota il carrello
+      this.syncCart();
+    },
     increaseQuantity(index) {
-      // Controlla se il piatto che si sta cercando di aggiungere proviene dallo stesso ristorante
-      const firstRestaurantId = this.cart[0]?.restaurant_id;
-      if (
-        firstRestaurantId &&
-        this.cart[index].restaurant_id !== firstRestaurantId
-      ) {
-        this.errorMessage = "Non puoi aggiungere piatti da ristoranti diversi.";
-        return;
-      }
-
       this.cart[index].quantity++;
       this.syncCart();
     },
-
     decreaseQuantity(index) {
       if (this.cart[index].quantity > 1) {
         this.cart[index].quantity--;
       } else {
-        this.cart.splice(index, 1); // Rimuove il piatto se la quantità è zero
+        this.cart.splice(index, 1); // Rimuove l'elemento se la quantità è 0
       }
       this.syncCart();
     },
-
-    clearCart() {
-        if (window.confirm("Sei sicuro di voler svuotare il carrello?")) {
-            // Svuota il carrello e sincronizza con il genitore
-            this.cart.length = 0; // Rimuove tutti gli elementi
-            this.syncCart();
-        }
-    },
-
     syncCart() {
-      // Sincronizza il carrello con il componente genitore e persiste nel localStorage
-      this.$emit("updateCart", [...this.cart]); // Sincronizza con il genitore
-      localStorage.setItem("cart", JSON.stringify(this.cart)); // Persisti il carrello nel localStorage
-      this.errorMessage = ""; // Resetta l'errore quando si sincronizza il carrello
+      this.$emit("updateCart", [...this.cart]); // Aggiorna il carrello nel componente genitore
+      localStorage.setItem("cart", JSON.stringify(this.cart)); // Salva nel localStorage
     },
-
     goToPayment() {
-      // Naviga alla pagina di pagamento passando il totale come query param
-      this.$router.push({ name: "payment", query: { total: this.total } });
+      if (this.cart.length > 0) {
+        this.$router.push({
+          name: "paymentPage",
+          query: { total: this.total }, // Passa il totale come query param
+        });
+      } else {
+        alert("Il carrello è vuoto!");
+      }
     },
   },
 };
 </script>
 
 <style scoped>
-.error-message {
-  color: red;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
 .cart-overlay {
   position: fixed;
   top: 0;
   right: 0;
-  width: 600px;
+  width: 400px;
   height: 100%;
-  background-color: rgba(
-    0,
-    0,
-    0,
-    0.7
-  ); /* Aggiunta di uno sfondo semi-trasparente */
+  background: white;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
 }
 
 .cart-content {
-  background-image: url(/public/images/background-pattern.png);
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
   overflow-y: auto;
-  color: white; /* Aggiunto per migliorare la leggibilità */
+}
+
+.cart-header {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 .button-exit-cart {
   background-color: transparent;
-  padding: 10px;
-  border-radius: 5px;
-  color: white; /* Modificato per visibilità */
+  border: none;
+  font-size: 1.5rem;
+  color:red;
+  cursor: pointer;
 }
 
-.fa-circle-xmark {
-  color: white; /* Modificato per visibilità */
-  font-size: 25px;
+.button-exit-cart:hover {
+  color: #0056b3;
 }
 
 .pay-button {
@@ -187,29 +141,20 @@ export default {
   cursor: not-allowed;
 }
 
-.cart-content h3 {
-  color: white; /* Aggiunto per migliorare la visibilità del titolo */
-}
-
-.cart-content ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.cart-content li {
-  margin-bottom: 10px;
-  color: white; /* Aggiunto per migliorare la visibilità del testo */
-}
-
-.cart-content button {
-  color: white;
-  background-color: #007bff;
+.btn-warning {
+  background-color: #ffc107;
+  color: black;
   border: none;
-  padding: 5px 10px;
-  border-radius: 5px;
+  cursor: pointer;
 }
 
-.cart-content button:hover {
-  background-color: #0056b3;
+.btn-warning:hover {
+  background-color: #e0a800;
+}
+
+@media (max-width: 768px) {
+  .cart-overlay {
+    width: 100%;
+  }
 }
 </style>
