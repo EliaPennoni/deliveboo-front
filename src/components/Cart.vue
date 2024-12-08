@@ -1,69 +1,65 @@
 <template>
-    <div v-if="cartVisible" class="cart-overlay">
-        <div class="cart-content container-fluid">
-            <button @click="toggleCart" class="button-exit-cart mb-4">
-                <i class="fa-solid fa-circle-xmark"></i>
+  <div v-if="cartVisible" class="cart-overlay">
+    <div class="cart-content container-fluid">
+      <button @click="toggleCart" class="button-exit-cart mb-4">
+        <i class="fa-solid fa-circle-xmark"></i>
+      </button>
+      <div class="d-flex my-2">
+        <h3 class="text-body">Carrello</h3>
+        <button
+          @click="clearCart"
+          class="btn btn-warning mb-2"
+          :disabled="!cart.length"
+        >
+          Svuota Carrello
+        </button>
+      </div>
+
+      <!-- Mostra il messaggio di errore se presente -->
+      <p v-if="errorMessage" class="error-message m-3">{{ errorMessage }}</p>
+
+      <ul class="my-3">
+        <li v-for="(item, index) in cart" :key="item.id">
+          <span class="text-body">
+            {{ item.name }} - € {{ (item.price * item.quantity).toFixed(2) }}
+          </span>
+
+          <div class="mb-4 d-flex justify-content-start gap-3">
+            <button @click="decreaseQuantity(index)" class="btn btn-danger">
+              -
             </button>
-            <div class="d-flex my-2">
-                <h3 class="text-body">Carrello</h3>
-                <!-- <div>
-                    <button @click="clearCart" class="btn btn-warning mb-2">Svuota Carrello</button>
-                </div> -->
-                <button 
-                    @click="clearCart" 
-                    class="btn btn-warning mb-2"
-                    :disabled="!cart.length"
-                >
-                    Svuota Carrello
-                </button>
-            </div>
+            <span class="text-secondary">
+              {{ item.quantity }}
+            </span>
+            <button
+              @click="increaseQuantity(index)"
+              class="btn btn-success m-0"
+            >
+              +
+            </button>
+          </div>
+        </li>
+      </ul>
 
-            <!-- Mostra il messaggio di errore se presente -->
-            <p v-if="errorMessage" class="error-message m-3">{{ errorMessage }}</p>
+      <p v-if="cart.length" class="text-body fs-5">
+        <b> Totale: € {{ total.toFixed(2) }} </b>
+      </p>
 
-            <ul class="my-3">
-                <li v-for="(item, index) in cart" :key="item.id">
-                    <span class="text-body">
-                        {{ item.name }} - € {{ item.price }}
-                    </span>
+      <p v-else class="text-body">
+        <b> Il carrello è vuoto </b>
+      </p>
 
-                    <div class="mb-4 d-flex justify-content-start gap-3">
-                        <button @click="decreaseQuantity(index)" class="btn btn-danger">
-                            -
-                        </button>
-                        <span class="text-secondary">
-                            {{ item.quantity }}
-                        </span>
-                        <button @click="increaseQuantity(index)" class="btn btn-success m-0">
-                            +
-                        </button>
-                    </div>
-                </li>
-            </ul>
-
-            <p v-if="cart.length" class="text-body fs-5">
-                <b>
-                    Totale: € {{ total }}
-                </b>
-            </p>
-
-            <p v-else class="text-body">
-                <b>
-                    Il carrello è vuoto
-                </b>
-            </p>
-
-            <div>
-                <button
-                @click="goToPayment"
-                :disabled="!cart.length"
-                class="pay-button"
-                >
-                Paga
-                </button>
-            </div>
-        </div>
+      <div>
+        <button
+          @click="goToPayment"
+          :disabled="!cart.length"
+          class="pay-button"
+        >
+          Paga
+        </button>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
@@ -78,13 +74,18 @@ export default {
       errorMessage: "", // Variabile per il messaggio di errore
     };
   },
+  computed: {
+    // Arrotonda il totale a due decimali
+    formattedTotal() {
+      return this.total.toFixed(2);
+    },
+  },
   methods: {
     toggleCart() {
       this.$emit("toggleCart");
     },
 
     increaseQuantity(index) {
-      // Controlla se il piatto che si sta cercando di aggiungere proviene dallo stesso ristorante
       const firstRestaurantId = this.cart[0]?.restaurant_id;
       if (
         firstRestaurantId &&
@@ -102,28 +103,25 @@ export default {
       if (this.cart[index].quantity > 1) {
         this.cart[index].quantity--;
       } else {
-        this.cart.splice(index, 1); // Rimuove il piatto se la quantità è zero
+        this.cart.splice(index, 1);
       }
       this.syncCart();
     },
 
     clearCart() {
-        if (window.confirm("Sei sicuro di voler svuotare il carrello?")) {
-            // Svuota il carrello e sincronizza con il genitore
-            this.cart.length = 0; // Rimuove tutti gli elementi
-            this.syncCart();
-        }
+      if (window.confirm("Sei sicuro di voler svuotare il carrello?")) {
+        this.cart.length = 0;
+        this.syncCart();
+      }
     },
 
     syncCart() {
-      // Sincronizza il carrello con il componente genitore e persiste nel localStorage
-      this.$emit("updateCart", [...this.cart]); // Sincronizza con il genitore
-      localStorage.setItem("cart", JSON.stringify(this.cart)); // Persisti il carrello nel localStorage
-      this.errorMessage = ""; // Resetta l'errore quando si sincronizza il carrello
+      this.$emit("updateCart", [...this.cart]);
+      localStorage.setItem("cart", JSON.stringify(this.cart));
+      this.errorMessage = "";
     },
 
     goToPayment() {
-      // Naviga alla pagina di pagamento passando il totale come query param
       this.$router.push({ name: "payment", query: { total: this.total } });
     },
   },
@@ -143,30 +141,25 @@ export default {
   right: 0;
   width: 600px;
   height: 100%;
-  background-color: rgba(
-    0,
-    0,
-    0,
-    0.7
-  ); /* Aggiunta di uno sfondo semi-trasparente */
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 .cart-content {
   background-image: url(/public/images/background-pattern.png);
   padding: 20px;
   overflow-y: auto;
-  color: white; /* Aggiunto per migliorare la leggibilità */
+  color: white;
 }
 
 .button-exit-cart {
   background-color: transparent;
   padding: 10px;
   border-radius: 5px;
-  color: white; /* Modificato per visibilità */
+  color: white;
 }
 
 .fa-circle-xmark {
-  color: white; /* Modificato per visibilità */
+  color: white;
   font-size: 25px;
 }
 
@@ -188,7 +181,7 @@ export default {
 }
 
 .cart-content h3 {
-  color: white; /* Aggiunto per migliorare la visibilità del titolo */
+  color: white;
 }
 
 .cart-content ul {
@@ -198,7 +191,7 @@ export default {
 
 .cart-content li {
   margin-bottom: 10px;
-  color: white; /* Aggiunto per migliorare la visibilità del testo */
+  color: white;
 }
 
 .cart-content button {

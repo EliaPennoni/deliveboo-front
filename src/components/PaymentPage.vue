@@ -15,6 +15,7 @@
 
     <!-- Sezione Dati Utente -->
     <div class="user-info">
+      <h3>Dati Utente</h3>
       <div class="form-group">
         <label for="name">Nome:</label>
         <input
@@ -49,6 +50,7 @@
 
     <!-- Sezione per il pagamento -->
     <div class="payment-method">
+      <h3>Metodo di Pagamento</h3>
       <div id="dropin-container"></div>
       <button @click="submitPayment" class="pay-button">Paga</button>
     </div>
@@ -62,37 +64,25 @@ import dropin from "braintree-web-drop-in";
 export default {
   data() {
     return {
-      clientToken: null, // Per salvare il client token
-      instance: null, // Per gestire l'istanza Drop-in
-      name: "", // Nome dell'utente
-      email: "", // Email dell'utente
-      telephone: "", // Telefono dell'utente
-      cart: JSON.parse(localStorage.getItem("cart")) || [], // Carrello salvato
+      clientToken: "sandbox_hc6dnztj_6b8mcbdphgfhzbv8",
+      instance: null,
+      name: "",
+      email: "",
+      telephone: "",
+      cart: JSON.parse(localStorage.getItem("cart")) || [],
     };
   },
   computed: {
     total() {
-      return this.cart.reduce(
-        (acc, item) => acc + item.price * item.quantity,
-        0
-      );
+      return this.cart
+        .reduce((acc, item) => acc + item.price * item.quantity, 0)
+        .toFixed(2);
     },
   },
   mounted() {
-    this.fetchClientToken();
+    this.initializeBraintree();
   },
   methods: {
-    async fetchClientToken() {
-      try {
-        const response = await axios.get("/api/get-client-token");
-        console.log("Client token ricevuto:", response.data.clientToken);
-        this.clientToken = response.data.clientToken;
-        this.initializeBraintree();
-      } catch (error) {
-        console.error("Errore nel recuperare il client token:", error);
-      }
-    },
-
     initializeBraintree() {
       if (!this.clientToken) {
         console.error("Client token non disponibile!");
@@ -118,27 +108,22 @@ export default {
       try {
         const { nonce } = await this.instance.requestPaymentMethod();
         const response = await axios.post("/api/process-payment", {
-          nonce: nonce,
-          amount: this.total, // Usa il totale calcolato
+          nonce,
+          amount: this.total,
           name: this.name,
           email: this.email,
           telephone: this.telephone,
-          cart: this.cart, // Aggiungi il carrello alla richiesta
+          cart: this.cart,
         });
 
         if (response.data.success) {
           console.log("Pagamento completato con successo");
-
-          // Redirige all'OrderConfirmation.vue con il transactionId
           this.$router.push({
             name: "orderConfirmation",
             query: { transactionId: response.data.transactionId },
           });
         } else {
-          console.error(
-            "Errore durante il pagamento:",
-            error.response ? error.response.data : error
-          );
+          console.error("Errore durante il pagamento:", response.data.message);
           alert("C'è stato un errore nel completamento del pagamento.");
         }
       } catch (error) {
@@ -157,97 +142,69 @@ export default {
 .payment-container {
   display: flex;
   justify-content: space-between;
-  padding: 20px;
   gap: 20px;
+  margin: 20px;
 }
 
-.order-summary {
-  flex: 0 0 30%;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-}
-
-.order-summary h3 {
-  margin-bottom: 15px;
-}
-
-.order-summary ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.order-summary li {
-  margin-bottom: 10px;
-}
-
-.order-summary p {
-  font-weight: bold;
-}
-
-.user-info {
-  flex: 1;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-}
-
+.order-summary,
+.user-info,
 .payment-method {
   flex: 1;
   padding: 20px;
   border: 1px solid #ddd;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.order-summary h3,
+.user-info h3,
+.payment-method h3 {
+  margin-bottom: 15px;
+  font-size: 1.5em;
 }
 
 .form-group {
   margin-bottom: 15px;
 }
 
-label {
+.form-group label {
   display: block;
-  font-weight: bold;
   margin-bottom: 5px;
+  font-weight: bold;
 }
 
-input {
+.form-group input {
   width: 100%;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  font-size: 14px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
-input:focus {
-  border-color: #007bff;
-}
-
-button {
-  background-color: #007bff;
-  color: white;
+.pay-button {
+  margin-top: 20px;
   padding: 10px 20px;
+  background-color: #28a745;
+  color: white;
+  font-size: 1em;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 16px;
-  width: 100%;
-  margin-top: 20px;
 }
 
-button:hover {
-  background-color: #0056b3;
+.pay-button:hover {
+  background-color: #218838;
 }
 
-.pay-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+ul {
+  list-style-type: none;
+  padding: 0;
 }
 
-#dropin-container {
-  width: 100%;
-  max-width: 400px;
-  margin-bottom: 20px;
+li {
+  margin-bottom: 10px;
+}
+
+p strong {
+  font-size: 1.2em;
 }
 </style>
