@@ -6,7 +6,8 @@
         <h3>Riepilogo Ordini</h3>
         <ul class="list-unstyled">
           <li v-for="(item, index) in cart" :key="index">
-            {{ item.name }} - €{{ item.price }} x {{ item.quantity }}
+            {{ item.name }} - €{{ parseFloat(item.price).toFixed(2) }} x
+            {{ item.quantity }}
           </li>
         </ul>
         <p>
@@ -56,7 +57,9 @@
       <div class="col-12 col-lg-4 payment-method">
         <h3>Pagamento</h3>
         <div id="dropin-container" class="mb-3"></div>
-        <button @click="submitPayment" class="btn btn-primary w-100">Paga</button>
+        <button @click="submitPayment" class="btn btn-primary w-100">
+          Paga
+        </button>
       </div>
     </div>
   </div>
@@ -79,10 +82,9 @@ export default {
   },
   computed: {
     total() {
-      return this.cart.reduce(
-        (acc, item) => acc + item.price * item.quantity,
-        0
-      );
+      return this.cart
+        .reduce((acc, item) => acc + parseFloat(item.price) * item.quantity, 0)
+        .toFixed(2);
     },
   },
   mounted() {
@@ -100,7 +102,10 @@ export default {
     },
 
     initializeBraintree() {
-      if (!this.clientToken) return;
+      if (!this.clientToken) {
+        console.error("Client token non disponibile!");
+        return;
+      }
 
       dropin.create(
         {
@@ -149,6 +154,7 @@ export default {
 .payment-container {
   background-color: #f8f9fa;
   border-radius: 10px;
+  padding: 20px;
 }
 
 .order-summary,

@@ -2,20 +2,27 @@
   <div v-if="cartVisible" class="cart-overlay">
     <div class="cart-content">
       <!-- Header con pulsanti -->
-      <div class="cart-header d-flex justify-content-between align-items-center">
+      <div
+        class="cart-header d-flex justify-content-between align-items-center"
+      >
         <button @click="toggleCart" class="button-exit-cart">
           <i class="fa-solid fa-circle-xmark"></i>
         </button>
         <h3>Carrello</h3>
-        <button @click="clearCart" class="btn btn-warning">
+        <button
+          @click="clearCart"
+          class="btn btn-warning"
+          :disabled="!cart.length"
+        >
           Svuota Carrello
         </button>
       </div>
 
+      <!-- Lista Ordini -->
       <div class="my-2">
         <ul>
-          <li v-for="(item, index) in cart" :key="item.id">
-            {{ item.name }} - €{{ item.price }} x {{ item.quantity }}
+          <li v-for="(item, index) in cart" :key="item.id" class="cart-item">
+            {{ item.name }} - €{{ (item.price * item.quantity).toFixed(2) }}
             <div class="d-flex gap-2 mt-2">
               <button @click="decreaseQuantity(index)" class="btn btn-danger">
                 -
@@ -29,8 +36,14 @@
         </ul>
       </div>
 
+      <!-- Totale e pulsante di pagamento -->
       <div>
-        <p>Totale: €{{ total }}</p>
+        <p v-if="cart.length" class="total">
+          <strong>Totale: €{{ formattedTotal }}</strong>
+        </p>
+        <p v-else class="text-body">
+          <strong>Il carrello è vuoto</strong>
+        </p>
         <button
           @click="goToPayment"
           :disabled="!cart.length"
@@ -45,16 +58,50 @@
 
 <script>
 export default {
-  props: ["cart", "cartVisible", "total"],
+  props: {
+    cart: {
+      type: Array,
+      default: () => [],
+    },
+    cartVisible: {
+      type: Boolean,
+      default: false,
+    },
+    total: {
+      type: Number,
+      default: 0,
+    },
+  },
+  data() {
+    return {
+      errorMessage: "", // Messaggio di errore
+    };
+  },
+  computed: {
+    formattedTotal() {
+      return this.total.toFixed(2); // Arrotonda a due decimali
+    },
+  },
   methods: {
     toggleCart() {
-      this.$emit("toggleCart"); // Chiude il carrello
+      this.$emit("toggleCart");
     },
     clearCart() {
-      this.cart.splice(0, this.cart.length); // Svuota il carrello
-      this.syncCart();
+      if (window.confirm("Sei sicuro di voler svuotare il carrello?")) {
+        this.cart.splice(0, this.cart.length); // Svuota il carrello
+        this.syncCart();
+      }
     },
     increaseQuantity(index) {
+      const firstRestaurantId = this.cart[0]?.restaurant_id;
+      if (
+        firstRestaurantId &&
+        this.cart[index].restaurant_id !== firstRestaurantId
+      ) {
+        this.errorMessage = "Non puoi aggiungere piatti da ristoranti diversi.";
+        return;
+      }
+
       this.cart[index].quantity++;
       this.syncCart();
     },
@@ -62,19 +109,20 @@ export default {
       if (this.cart[index].quantity > 1) {
         this.cart[index].quantity--;
       } else {
-        this.cart.splice(index, 1); // Rimuove l'elemento se la quantità è 0
+        this.cart.splice(index, 1); // Rimuove il piatto se la quantità è zero
       }
       this.syncCart();
     },
     syncCart() {
-      this.$emit("updateCart", [...this.cart]); // Aggiorna il carrello nel componente genitore
-      localStorage.setItem("cart", JSON.stringify(this.cart)); // Salva nel localStorage
+      this.$emit("updateCart", [...this.cart]); // Aggiorna nel componente genitore
+      localStorage.setItem("cart", JSON.stringify(this.cart)); // Persistenza nel localStorage
+      this.errorMessage = ""; // Resetta il messaggio di errore
     },
     goToPayment() {
       if (this.cart.length > 0) {
         this.$router.push({
           name: "paymentPage",
-          query: { total: this.total }, // Passa il totale come query param
+          query: { total: this.formattedTotal }, // Passa il totale come query param
         });
       } else {
         alert("Il carrello è vuoto!");
@@ -91,7 +139,7 @@ export default {
   right: 0;
   width: 400px;
   height: 100%;
-  background: white;
+  background-color: #f8f9fa;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
   z-index: 1050;
   display: flex;
@@ -116,12 +164,8 @@ export default {
   background-color: transparent;
   border: none;
   font-size: 1.5rem;
-  color:red;
+  color: red;
   cursor: pointer;
-}
-
-.button-exit-cart:hover {
-  color: #0056b3;
 }
 
 .pay-button {
@@ -141,15 +185,13 @@ export default {
   cursor: not-allowed;
 }
 
-.btn-warning {
-  background-color: #ffc107;
-  color: black;
-  border: none;
-  cursor: pointer;
+.cart-item {
+  margin-bottom: 20px;
 }
 
-.btn-warning:hover {
-  background-color: #e0a800;
+.total {
+  font-size: 18px;
+  font-weight: bold;
 }
 
 @media (max-width: 768px) {
