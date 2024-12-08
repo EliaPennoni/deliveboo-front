@@ -73,67 +73,41 @@ export default {
 </script>
 
 <template>
-  <section class="jumbotron">
-    <div class="title-jumbotron">
-      <h1>Benvenuti su deliveBoo!</h1>
-    </div>
-  </section>
-
-  <div>
-    <!-- Filtro per categoria -->
-    <h1 class="text-center my-title mt-5">Ristoranti</h1>
-    <p class="text-center ibm-plex-mono-regular-subtitle mb-4">
-      Guarda tra la selezione dei nostri ristoranti e ordina da quello che fa
-      più al caso tuo!
-    </p>
-
-    <div class="category-filter-container filter-box">
-      <div
-        v-for="category in categories"
-        :key="category.id"
-        class="form-check category-item"
-      >
+  <div class="container my-5">
+    <h1 class="text-center mb-4">Ristoranti</h1>
+    <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
+      <div v-for="category in categories" :key="category.id" class="form-check">
         <input
-          class="form-check-input me-2"
+          class="form-check-input"
           type="checkbox"
           :value="category.id"
           v-model="selectedCategories"
           @change="filterRestaurants"
         />
-        <label class="form-check-label ibm-plex-mono-regular">
-          {{ category.name }}
-        </label>
+        <label class="form-check-label">{{ category.name }}</label>
       </div>
     </div>
-  </div>
 
-  <!-- Mostra i ristoranti filtrati -->
-  <div
-    class="background-pattern container my-5 shadow p-5 mb-5 bg-body-tertiary text-center"
-  >
     <div class="row">
-      <div class="col-4" v-for="restaurant in restaurants" :key="restaurant.id">
-        <div class="card shadow mb-5">
-          <div class="p-0">
-            <img :src="restaurant.image" :alt="restaurant.name" />
-          </div>
-          <div class="card-body text-center p-3">
-            <div>
-              <h2 class="ibm-plex-mono-bold mb-1">{{ restaurant.name }}</h2>
-              <p class="ibm-plex-mono-regular mb-4">{{ restaurant.address }}</p>
-              <button
-                @click="goToDetails(restaurant.id)"
-                class="button-menu ibm-plex-mono-regular"
-              >
-                Visualizza Piatti
-              </button>
-            </div>
+      <div class="col-12 col-sm-6 col-md-4 mb-4" v-for="restaurant in restaurants" :key="restaurant.id">
+        <div class="card">
+          <img :src="restaurant.image" class="card-img-top img-fluid" alt="Ristorante">
+          <div class="card-body text-center">
+            <h5 class="card-title">{{ restaurant.name }}</h5>
+            <p class="card-text">{{ restaurant.address }}</p>
+            <button
+              @click="goToDetails(restaurant.id)"
+              class="btn btn-primary w-100"
+            >
+              Visualizza Piatti
+            </button>
           </div>
         </div>
       </div>
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .jumbotron {

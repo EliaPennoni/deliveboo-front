@@ -1,55 +1,49 @@
 <template>
   <div v-if="cartVisible" class="cart-overlay">
-    <div class="cart-content container-fluid">
-      <button @click="toggleCart" class="button-exit-cart mb-4">
-        <i class="fa-solid fa-circle-xmark"></i>
-      </button>
-      <div class="d-flex my-2">
-        <h3 class="text-body">Carrello</h3>
+    <div class="cart-content">
+      <!-- Header con pulsanti -->
+      <div
+        class="cart-header d-flex justify-content-between align-items-center"
+      >
+        <button @click="toggleCart" class="button-exit-cart">
+          <i class="fa-solid fa-circle-xmark"></i>
+        </button>
+        <h3>Carrello</h3>
         <button
           @click="clearCart"
-          class="btn btn-warning mb-2"
+          class="btn btn-warning"
           :disabled="!cart.length"
         >
           Svuota Carrello
         </button>
       </div>
 
-      <!-- Mostra il messaggio di errore se presente -->
-      <p v-if="errorMessage" class="error-message m-3">{{ errorMessage }}</p>
+      <!-- Lista Ordini -->
+      <div class="my-2">
+        <ul>
+          <li v-for="(item, index) in cart" :key="item.id" class="cart-item">
+            {{ item.name }} - €{{ (item.price * item.quantity).toFixed(2) }}
+            <div class="d-flex gap-2 mt-2">
+              <button @click="decreaseQuantity(index)" class="btn btn-danger">
+                -
+              </button>
+              <span>{{ item.quantity }}</span>
+              <button @click="increaseQuantity(index)" class="btn btn-success">
+                +
+              </button>
+            </div>
+          </li>
+        </ul>
+      </div>
 
-      <ul class="my-3">
-        <li v-for="(item, index) in cart" :key="item.id">
-          <span class="text-body">
-            {{ item.name }} - € {{ (item.price * item.quantity).toFixed(2) }}
-          </span>
-
-          <div class="mb-4 d-flex justify-content-start gap-3">
-            <button @click="decreaseQuantity(index)" class="btn btn-danger">
-              -
-            </button>
-            <span class="text-secondary">
-              {{ item.quantity }}
-            </span>
-            <button
-              @click="increaseQuantity(index)"
-              class="btn btn-success m-0"
-            >
-              +
-            </button>
-          </div>
-        </li>
-      </ul>
-
-      <p v-if="cart.length" class="text-body fs-5">
-        <b> Totale: € {{ total.toFixed(2) }} </b>
-      </p>
-
-      <p v-else class="text-body">
-        <b> Il carrello è vuoto </b>
-      </p>
-
+      <!-- Totale e pulsante di pagamento -->
       <div>
+        <p v-if="cart.length" class="total">
+          <strong>Totale: €{{ formattedTotal }}</strong>
+        </p>
+        <p v-else class="text-body">
+          <strong>Il carrello è vuoto</strong>
+        </p>
         <button
           @click="goToPayment"
           :disabled="!cart.length"
@@ -65,26 +59,39 @@
 <script>
 export default {
   props: {
-    cart: Array,
-    cartVisible: Boolean,
-    total: Number,
+    cart: {
+      type: Array,
+      default: () => [],
+    },
+    cartVisible: {
+      type: Boolean,
+      default: false,
+    },
+    total: {
+      type: Number,
+      default: 0,
+    },
   },
   data() {
     return {
-      errorMessage: "", // Variabile per il messaggio di errore
+      errorMessage: "", // Messaggio di errore
     };
   },
   computed: {
-    // Arrotonda il totale a due decimali
     formattedTotal() {
-      return this.total.toFixed(2);
+      return this.total.toFixed(2); // Arrotonda a due decimali
     },
   },
   methods: {
     toggleCart() {
       this.$emit("toggleCart");
     },
-
+    clearCart() {
+      if (window.confirm("Sei sicuro di voler svuotare il carrello?")) {
+        this.cart.splice(0, this.cart.length); // Svuota il carrello
+        this.syncCart();
+      }
+    },
     increaseQuantity(index) {
       const firstRestaurantId = this.cart[0]?.restaurant_id;
       if (
@@ -98,69 +105,67 @@ export default {
       this.cart[index].quantity++;
       this.syncCart();
     },
-
     decreaseQuantity(index) {
       if (this.cart[index].quantity > 1) {
         this.cart[index].quantity--;
       } else {
-        this.cart.splice(index, 1);
+        this.cart.splice(index, 1); // Rimuove il piatto se la quantità è zero
       }
       this.syncCart();
     },
-
-    clearCart() {
-      if (window.confirm("Sei sicuro di voler svuotare il carrello?")) {
-        this.cart.length = 0;
-        this.syncCart();
-      }
-    },
-
     syncCart() {
-      this.$emit("updateCart", [...this.cart]);
-      localStorage.setItem("cart", JSON.stringify(this.cart));
-      this.errorMessage = "";
+      this.$emit("updateCart", [...this.cart]); // Aggiorna nel componente genitore
+      localStorage.setItem("cart", JSON.stringify(this.cart)); // Persistenza nel localStorage
+      this.errorMessage = ""; // Resetta il messaggio di errore
     },
-
     goToPayment() {
-      this.$router.push({ name: "payment", query: { total: this.total } });
+      if (this.cart.length > 0) {
+        this.$router.push({
+          name: "paymentPage",
+          query: { total: this.formattedTotal }, // Passa il totale come query param
+        });
+      } else {
+        alert("Il carrello è vuoto!");
+      }
     },
   },
 };
 </script>
 
 <style scoped>
-.error-message {
-  color: red;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
 .cart-overlay {
   position: fixed;
   top: 0;
   right: 0;
-  width: 600px;
+  width: 400px;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: #f8f9fa;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
 }
 
 .cart-content {
-  background-image: url(/public/images/background-pattern.png);
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
   overflow-y: auto;
-  color: white;
+}
+
+.cart-header {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 .button-exit-cart {
   background-color: transparent;
-  padding: 10px;
-  border-radius: 5px;
-  color: white;
-}
-
-.fa-circle-xmark {
-  color: white;
-  font-size: 25px;
+  border: none;
+  font-size: 1.5rem;
+  color: red;
+  cursor: pointer;
 }
 
 .pay-button {
@@ -180,29 +185,18 @@ export default {
   cursor: not-allowed;
 }
 
-.cart-content h3 {
-  color: white;
+.cart-item {
+  margin-bottom: 20px;
 }
 
-.cart-content ul {
-  list-style-type: none;
-  padding: 0;
+.total {
+  font-size: 18px;
+  font-weight: bold;
 }
 
-.cart-content li {
-  margin-bottom: 10px;
-  color: white;
-}
-
-.cart-content button {
-  color: white;
-  background-color: #007bff;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 5px;
-}
-
-.cart-content button:hover {
-  background-color: #0056b3;
+@media (max-width: 768px) {
+  .cart-overlay {
+    width: 100%;
+  }
 }
 </style>

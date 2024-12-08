@@ -1,58 +1,66 @@
 <template>
-  <div class="payment-container">
-    <!-- Riepilogo Ordini -->
-    <div class="order-summary">
-      <h3>Riepilogo Ordini</h3>
-      <ul>
-        <li v-for="(item, index) in cart" :key="index">
-          {{ item.name }} - €{{ item.price }} x {{ item.quantity }}
-        </li>
-      </ul>
-      <p>
-        <strong>Totale: €{{ total }}</strong>
-      </p>
-    </div>
+  <div class="container payment-container py-5">
+    <div class="row">
+      <!-- Riepilogo Ordini -->
+      <div class="col-12 col-lg-4 order-summary mb-4">
+        <h3>Riepilogo Ordini</h3>
+        <ul class="list-unstyled">
+          <li v-for="(item, index) in cart" :key="index">
+            {{ item.name }} - €{{ parseFloat(item.price).toFixed(2) }} x
+            {{ item.quantity }}
+          </li>
+        </ul>
+        <p>
+          <strong>Totale: €{{ total }}</strong>
+        </p>
+      </div>
 
-    <!-- Sezione Dati Utente -->
-    <div class="user-info">
-      <h3>Dati Utente</h3>
-      <div class="form-group">
-        <label for="name">Nome:</label>
-        <input
-          type="text"
-          v-model="name"
-          id="name"
-          required
-          placeholder="Inserisci il tuo nome"
-        />
+      <!-- Sezione Dati Utente -->
+      <div class="col-12 col-lg-4 user-info mb-4">
+        <h3>Dati Utente</h3>
+        <div class="form-group mb-3">
+          <label for="name">Nome:</label>
+          <input
+            type="text"
+            v-model="name"
+            id="name"
+            class="form-control"
+            required
+            placeholder="Inserisci il tuo nome"
+          />
+        </div>
+        <div class="form-group mb-3">
+          <label for="email">Email:</label>
+          <input
+            type="email"
+            v-model="email"
+            id="email"
+            class="form-control"
+            required
+            placeholder="Inserisci la tua email"
+          />
+        </div>
+        <div class="form-group mb-3">
+          <label for="telephone">Telefono:</label>
+          <input
+            type="tel"
+            v-model="telephone"
+            id="telephone"
+            class="form-control"
+            required
+            placeholder="Inserisci il tuo numero di telefono"
+          />
+        </div>
       </div>
-      <div class="form-group">
-        <label for="email">Email:</label>
-        <input
-          type="email"
-          v-model="email"
-          id="email"
-          required
-          placeholder="Inserisci la tua email"
-        />
-      </div>
-      <div class="form-group">
-        <label for="telephone">Telefono:</label>
-        <input
-          type="tel"
-          v-model="telephone"
-          id="telephone"
-          required
-          placeholder="Inserisci il tuo numero di telefono"
-        />
-      </div>
-    </div>
 
-    <!-- Sezione per il pagamento -->
-    <div class="payment-method">
-      <h3>Metodo di Pagamento</h3>
-      <div id="dropin-container"></div>
-      <button @click="submitPayment" class="pay-button">Paga</button>
+      <!-- Sezione per il pagamento -->
+      <div class="col-12 col-lg-4 payment-method">
+        <h3>Pagamento</h3>
+        <div id="dropin-container" class="mb-3"></div>
+        <button @click="submitPayment" class="btn btn-primary w-100">
+          Paga
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -64,7 +72,7 @@ import dropin from "braintree-web-drop-in";
 export default {
   data() {
     return {
-      clientToken: "sandbox_hc6dnztj_6b8mcbdphgfhzbv8",
+      clientToken: null,
       instance: null,
       name: "",
       email: "",
@@ -75,14 +83,24 @@ export default {
   computed: {
     total() {
       return this.cart
-        .reduce((acc, item) => acc + item.price * item.quantity, 0)
+        .reduce((acc, item) => acc + parseFloat(item.price) * item.quantity, 0)
         .toFixed(2);
     },
   },
   mounted() {
-    this.initializeBraintree();
+    this.fetchClientToken();
   },
   methods: {
+    async fetchClientToken() {
+      try {
+        const response = await axios.get("/api/get-client-token");
+        this.clientToken = response.data.clientToken;
+        this.initializeBraintree();
+      } catch (error) {
+        console.error("Errore nel recuperare il client token:", error);
+      }
+    },
+
     initializeBraintree() {
       if (!this.clientToken) {
         console.error("Client token non disponibile!");
@@ -108,7 +126,7 @@ export default {
       try {
         const { nonce } = await this.instance.requestPaymentMethod();
         const response = await axios.post("/api/process-payment", {
-          nonce,
+          nonce: nonce,
           amount: this.total,
           name: this.name,
           email: this.email,
@@ -117,20 +135,14 @@ export default {
         });
 
         if (response.data.success) {
-          console.log("Pagamento completato con successo");
           this.$router.push({
             name: "orderConfirmation",
             query: { transactionId: response.data.transactionId },
           });
         } else {
-          console.error("Errore durante il pagamento:", response.data.message);
           alert("C'è stato un errore nel completamento del pagamento.");
         }
       } catch (error) {
-        console.error(
-          "Errore durante il pagamento:",
-          error.response ? error.response.data : error
-        );
         alert("C'è stato un errore nel completamento del pagamento.");
       }
     },
@@ -140,71 +152,40 @@ export default {
 
 <style scoped>
 .payment-container {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  margin: 20px;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  padding: 20px;
 }
 
 .order-summary,
 .user-info,
 .payment-method {
-  flex: 1;
+  background-color: #ffffff;
   padding: 20px;
   border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.order-summary h3,
-.user-info h3,
-.payment-method h3 {
-  margin-bottom: 15px;
-  font-size: 1.5em;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.pay-button {
-  margin-top: 20px;
+button {
+  font-size: 16px;
   padding: 10px 20px;
-  background-color: #28a745;
-  color: white;
-  font-size: 1em;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
 }
 
-.pay-button:hover {
-  background-color: #218838;
-}
+@media (max-width: 768px) {
+  .payment-container {
+    padding: 15px;
+  }
 
-ul {
-  list-style-type: none;
-  padding: 0;
-}
+  .order-summary,
+  .user-info,
+  .payment-method {
+    padding: 15px;
+  }
 
-li {
-  margin-bottom: 10px;
-}
-
-p strong {
-  font-size: 1.2em;
+  button {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
 }
 </style>

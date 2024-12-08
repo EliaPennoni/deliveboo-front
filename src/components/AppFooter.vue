@@ -1,143 +1,99 @@
 <script>
-// import components
 export default {
   name: "AppFooter",
 };
 </script>
-<template>
-  <footer>
-    <div class="container">
-      <div class="row">
-        <div class="col-8 d-flex">
-          <!--Link-->
-          <div class="row py-5 my-5 me-1">
-            <div class="col-4 g-0">
-              <h5 class="mb-3 title-link-footer ibm-plex-mono-semibold">
-                Scopri deliveBoo
-              </h5>
-              <div>
-                <ul class="p-0 my-1 link-footer ibm-plex-mono-regular">
-                  <li>
-                    <a href="#">Chi siamo</a>
-                  </li>
-                  <li>
-                    <a href="#">Ristoranti</a>
-                  </li>
-                  <li>
-                    <a href="#">Diventa parte del team!</a>
-                  </li>
-                  <li>
-                    <a href="#">Diventa nostro partner!</a>
-                  </li>
-                </ul>
-              </div>
-            </div>
 
-            <div class="col-4">
-              <h5 class="mb-3 title-link-footer ibm-plex-mono-semibold">
-                Scopri deliveBoo
-              </h5>
-              <div>
-                <ul class="p-0 my-1 link-footer ibm-plex-mono-regular">
-                  <li>
-                    <a href="#">Termini e condizioni</a>
-                  </li>
-                  <li>
-                    <a href="#">Informativa sulla privacy</a>
-                  </li>
-                  <li>
-                    <a href="#">Cookies</a>
-                  </li>
-                </ul>
-              </div>
+<template>
+  <footer class="bg-dark text-light py-4">
+    <div class="container">
+      <!-- Prima riga: Link e Logo -->
+      <div class="row">
+        <!-- Sezione Link -->
+        <div class="col-12 col-md-8">
+          <div class="row">
+            <div class="col-12 col-sm-4 mb-3">
+              <h5>Scopri DeliveBoo</h5>
+              <ul class="list-unstyled">
+                <li><a href="#" class="text-light">Chi siamo</a></li>
+                <li><a href="#" class="text-light">Ristoranti</a></li>
+                <li><a href="#" class="text-light">Diventa parte del team!</a></li>
+                <li><a href="#" class="text-light">Diventa nostro partner!</a></li>
+              </ul>
             </div>
-            <div class="col-4">
-              <h5 class="mb-3 title-link-footer ibm-plex-mono-semibold">
-                Scopri deliveBoo
-              </h5>
-              <div>
-                <ul class="p-0 my-1 link-footer ibm-plex-mono-regular">
-                  <li>
-                    <a href="#">Contattaci</a>
-                  </li>
-                  <li>
-                    <a href="#">FAQ</a>
-                  </li>
-                </ul>
-              </div>
+            <div class="col-12 col-sm-4 mb-3">
+              <h5>Informazioni Legali</h5>
+              <ul class="list-unstyled">
+                <li><a href="#" class="text-light">Termini e condizioni</a></li>
+                <li><a href="#" class="text-light">Informativa sulla privacy</a></li>
+                <li><a href="#" class="text-light">Cookies</a></li>
+              </ul>
+            </div>
+            <div class="col-12 col-sm-4 mb-3">
+              <h5>Assistenza</h5>
+              <ul class="list-unstyled">
+                <li><a href="#" class="text-light">Contattaci</a></li>
+                <li><a href="#" class="text-light">FAQ</a></li>
+              </ul>
             </div>
           </div>
         </div>
-        <!--Logo-->
-        <div class="col-4 d-flex flex-column justify-content-center pe-5">
-          <img
-            class="logo-deliveboo"
-            src="/images/Logo-deliveBoo-white.png"
-            alt="deliveBoo-logo"
-          />
+
+        <!-- Logo -->
+        <div class="col-12 col-md-4 d-flex align-items-center justify-content-center">
+          <img src="/images/Logo-deliveBoo-white.png" alt="Logo DeliveBoo" class="img-fluid" style="max-width: 200px;">
         </div>
       </div>
-      <div class="row">
-        <div class="col-4 d-flex justify-content-between">
-          <div>
-            <ul class="link-footer d-flex p-0">
-              <li>
-                <i class="fa-brands fa-facebook"></i>
-              </li>
-              <li>
-                <i class="fa-brands fa-instagram"></i>
-              </li>
-              <li>
-                <i class="fa-brands fa-tiktok"></i>
-              </li>
-            </ul>
-          </div>
+
+      <!-- Seconda riga: Social e Copyright -->
+      <div class="row mt-4">
+        <!-- Social -->
+        <div class="col-12 col-md-4 d-flex justify-content-center justify-content-md-start mb-3">
+          <ul class="list-inline">
+            <li class="list-inline-item me-3"><i class="fa-brands fa-facebook fa-lg"></i></li>
+            <li class="list-inline-item me-3"><i class="fa-brands fa-instagram fa-lg"></i></li>
+            <li class="list-inline-item"><i class="fa-brands fa-tiktok fa-lg"></i></li>
+          </ul>
         </div>
-        <div class="col-4 cop-deliveboo ibm-plex-mono-regular">
-          <h4>Copyright deliveBoo</h4>
+
+        <!-- Copyright -->
+        <div class="col-12 col-md-4 text-center mb-3">
+          <p>© Copyright DeliveBoo 2024</p>
         </div>
-        <div class="col-4 team-5 ibm-plex-mono-regular">
-          <h4>Team 5</h4>
+
+        <!-- Team -->
+        <div class="col-12 col-md-4 text-center text-md-end">
+          <p>Team 5</p>
         </div>
       </div>
     </div>
   </footer>
 </template>
+
 <style scoped>
-footer {
-  background-color: #2f2f2f;
-  max-height: 400px;
-}
-.title-link-footer {
+footer h5 {
   color: white;
 }
-.link-footer {
-  list-style-type: none;
+
+footer ul {
+  padding: 0;
+  list-style: none;
 }
-ul > li > i {
-  color: white;
-  margin-right: 15px;
-  margin-bottom: 20px;
-  font-size: 25px;
-}
-a {
+
+footer ul li a {
   text-decoration: none;
+  color: lightgray;
+}
+
+footer ul li a:hover {
   color: white;
 }
-.logo-deliveboo {
-  width: 100%;
-  height: auto;
-  max-width: 300px;
-  margin-top: 20px;
+
+footer .fa-lg {
+  color: white;
 }
-.cop-deliveboo {
-  text-align: center;
-}
-.team-5 {
-  text-align: end;
-}
-h4 {
-  color: #4a4a4a;
-  font-size: 15px;
+
+footer .fa-lg:hover {
+  color: #fac200;
 }
 </style>
