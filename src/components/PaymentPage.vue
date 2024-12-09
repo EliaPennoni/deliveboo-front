@@ -1,25 +1,29 @@
 <template>
   <div class="container payment-container py-5">
     <div class="row">
-      <!-- Riepilogo Ordini -->
-      <div class="col-12 col-lg-4 order-summary mb-4">
-        <h3>Riepilogo Ordini</h3>
+      <div class="col-6 d-none d-lg-flex justify-content-center align-items-center">
+          <img class="img-pay" src="/images/pay-img.svg" alt="pay-img">
+      </div>
+      <div class="col-6 flex-grow-1">
+        <!-- Riepilogo Ordini -->
+      <div class="col-12 order-summary mb-2">
+        <h3 class="ibm-plex-mono-semibold text-center mb-3">Riepilogo Ordini</h3>
         <ul class="list-unstyled">
-          <li v-for="(item, index) in cart" :key="index">
+          <li class="ibm-plex-mono-regular" v-for="(item, index) in cart" :key="index">
             {{ item.name }} - €{{ parseFloat(item.price).toFixed(2) }} x
             {{ item.quantity }}
           </li>
         </ul>
-        <p>
+        <p class="ibm-plex-mono-regular">
           <strong>Totale: €{{ total }}</strong>
         </p>
       </div>
 
       <!-- Sezione Dati Utente -->
-      <div class="col-12 col-lg-4 user-info mb-4">
-        <h3>Dati Utente</h3>
+      <div class="col-12 user-info mb-2">
+        <h3 class="ibm-plex-mono-semibold text-center mb-3">Dati Utente</h3>
         <div class="form-group mb-3">
-          <label for="name">Nome:</label>
+          <label class="ibm-plex-mono-regular" for="name">Nome:</label>
           <input
             type="text"
             v-model="name"
@@ -30,8 +34,8 @@
           />
         </div>
         <div class="form-group mb-3">
-          <label for="email">Email:</label>
-          <input
+          <label class="ibm-plex-mono-regular" for="email">Email:</label>
+          <input 
             type="email"
             v-model="email"
             id="email"
@@ -41,7 +45,7 @@
           />
         </div>
         <div class="form-group mb-3">
-          <label for="telephone">Telefono:</label>
+          <label class="ibm-plex-mono-regular" for="telephone">Telefono:</label>
           <input
             type="tel"
             v-model="telephone"
@@ -54,12 +58,13 @@
       </div>
 
       <!-- Sezione per il pagamento -->
-      <div class="col-12 col-lg-4 payment-method">
-        <h3>Pagamento</h3>
+      <div class="col-12 col-lg-12 col-sm-8 payment-method">
+        <h3 class="ibm-plex-mono-semibold text-center mb-3">Pagamento</h3>
         <div id="dropin-container" class="mb-3"></div>
-        <button @click="submitPayment" class="btn btn-primary w-100">
+        <button @click="submitPayment" class="button-menu  ibm-plex-mono-regular w-100">
           Paga
         </button>
+      </div>
       </div>
     </div>
   </div>
@@ -170,6 +175,11 @@ export default {
 button {
   font-size: 16px;
   padding: 10px 20px;
+}
+
+.img-pay{
+  width:620px;
+  height: 500px;
 }
 
 @media (max-width: 768px) {
