@@ -44,7 +44,7 @@ export default {
 
 <template>
     <nav class="navbar navbar-expand-lg shadow sticky-top ">
-        <div class="container d-md-flex justify-content-center">
+          <div class="container d-md-flex justify-content-between">
             <a href="/" class="col-6">
                 <img
                 class="logo-deliveboo"
@@ -53,24 +53,25 @@ export default {
                 />
             </a>
             
-            <div class="d-flex justify-content-end">
-                <a href="http://127.0.0.1:8000/" class="d-lg-block d-md-none ibm-plex-mono-regular button-menu text-white">
-                    Accedi/Registrati
-                </a>
+            <div class="d-flex d-sm-flex justify-content-end">
+              <a href="http://127.0.0.1:8000/" class="d-none d-lg-block d-md-none d-sm-none ibm-plex-mono-regular button-menu text-white">
+                  Accedi/Registrati
+              </a>
+              <a href="http://127.0.0.1:8000/" class="d-lg-none d-md-block ibm-plex-mono-regular button-menu text-white px-3">
+                  <i class="fa-solid fa-user"></i>
+              </a>
 
-
-
-                <button @click="toggleCart" class="button-menu text-dark ml-3 ms-3 position-relative">
-                    <i class="p-1 fa-solid fa-cart-shopping text-white"></i>
-                    <span
-                    v-if="cartCount > 0"
-                    class="badge badge-danger position-absolute top-0 start-100 translate-middle border border-light rounded-circle"
-                    >
-                        {{ cartCount }}
-                    </span>
-                </button>
+              <button @click="toggleCart" class="button-menu text-dark ml-3 ms-3 position-relative">
+                <i class="p-1 fa-solid fa-cart-shopping text-white"></i>
+                <span
+                v-if="cartCount > 0"
+                class="badge badge-danger position-absolute top-0 start-100 translate-middle border border-light rounded-circle"
+                >
+                    {{ cartCount }}
+                </span>
+              </button>
             </div>
-        </div>
+          </div>
         <Cart
         :cart="cart"
         :cartVisible="cartVisible"
