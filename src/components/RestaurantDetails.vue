@@ -10,13 +10,15 @@ export default {
     };
   },
   methods: {
-    fetchRestaurantDetails() {
-      axios
-        .get(`http://127.0.0.1:8000/api/restaurants/${this.$route.params.id}`)
-        .then(({ data }) => {
-          this.restaurant = data;
-        })
-        .catch((error) => console.error("Errore:", error));
+    async fetchRestaurantDetails() {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/restaurants/${this.$route.params.id}`
+        );
+        this.restaurant = response.data;
+      } catch (error) {
+        console.error("Errore:", error);
+      }
     },
     addToCart(dish) {
       // Controlla se il piatto appartiene allo stesso ristorante
@@ -51,30 +53,28 @@ export default {
 <template>
   <div class="container my-5 text-center">
     <div v-if="restaurant">
-      <div class="card mb-3">
+      <div class="card mb-3 d-flex justify-content-center">
         <div class="row g-0">
-          <div class="col-12 d-flex">
-            <div class="col-6 image-card-horizontal">
-              <img
-                :src="restaurant.image"
-                class="img-fluid"
-                :alt="restaurant.name"
-                @error="restaurant.image = '/images/default-restaurant.png'"
-              />
-            </div>
-            <div class="col-6">
-              <div class="card-body text-start">
-                <h5 class="my-title-card">{{ restaurant.name }}</h5>
-                <p class="card-text">{{ restaurant.address }}</p>
-                <p class="ibm-plex-mono-regular">
-                  Fame? Prendi i piatti che ti ispirano di più e noi te lo
-                  portiamo!
-                </p>
-              </div>
+          <div class="col-md-4 me-3">
+            <img
+              :src="restaurant.image"
+              class="img-fluid"
+              :alt="restaurant.name"
+              @error="restaurant.image = '/images/default-restaurant.png'"
+            />
+          </div>
+          <div class="col-md-8">
+            <div class="card-body text-start">
+              <h5 class="my-title-card">{{ restaurant.name }}</h5>
+              <p class="ibm-plex-mono-regular">{{ restaurant.address }}</p>
+              <p class="ibm-plex-mono-regular">
+                Fame? Ordina i piatti che ti ispirano di più!
+              </p>
             </div>
           </div>
         </div>
       </div>
+
       <div
         class="background-pattern container my-5 shadow p-5 mb-5 bg-body-tertiary text-center"
       >
@@ -94,7 +94,7 @@ export default {
               <div class="card-body d-flex flex-column">
                 <h3 class="ibm-plex-mono-bold mb-2">{{ dish.name }}</h3>
                 <p class="ibm-plex-mono-regular">{{ dish.description }}</p>
-                <p class="ibm-plex-mono-regular">Prezzo: €{{ dish.price }}</p>
+                <p class="ibm-plex-mono-semibold">Prezzo: €{{ dish.price }}</p>
                 <button
                   class="button-menu ibm-plex-mono-regular mt-3"
                   @click="addToCart(dish)"

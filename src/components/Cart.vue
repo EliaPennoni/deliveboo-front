@@ -3,51 +3,56 @@
     <div class="cart-content">
       <!-- Header con pulsanti -->
       <div
-        class="cart-header d-flex justify-content-between align-items-center"
+        class="cart-header justify-content-between align-items-center"
       >
         <button @click="toggleCart" class="button-exit-cart">
           <i class="fa-solid fa-circle-xmark"></i>
         </button>
-        <h3>Carrello</h3>
-        <button
-          @click="clearCart"
-          class="btn btn-warning"
-          :disabled="!cart.length"
-        >
-          Svuota Carrello
-        </button>
+        <div class="d-flex align-items-center my-3">
+          <h3 class="ibm-plex-mono-bold">Carrello</h3>
+          <button
+            @click="clearCart"
+            class="button-menu-delete"
+            :disabled="!cart.length"
+          >
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+        
       </div>
 
       <!-- Lista Ordini -->
       <div class="my-2">
-        <ul>
-          <li v-for="(item, index) in cart" :key="item.id" class="cart-item">
+        <ul class="ibm-plex-mono-regular text-center">
+          <li v-for="(item, index) in cart" :key="item.id" class="cart-item ibm-plex-mono-bold">
             {{ item.name }} - €{{ (item.price * item.quantity).toFixed(2) }}
-            <div class="d-flex gap-2 mt-2">
-              <button @click="decreaseQuantity(index)" class="btn btn-danger">
+            <div class="d-flex gap-2 my-4 ">
+              <button @click="decreaseQuantity(index)" class="button-add">
                 -
               </button>
               <span>{{ item.quantity }}</span>
-              <button @click="increaseQuantity(index)" class="btn btn-success">
+              <button @click="increaseQuantity(index)" class="button-add">
                 +
               </button>
             </div>
+            <hr>
           </li>
+          
         </ul>
       </div>
 
       <!-- Totale e pulsante di pagamento -->
       <div>
-        <p v-if="cart.length" class="total">
+        <p v-if="cart.length" class="total ibm-plex-mono-semibold">
           <strong>Totale: €{{ formattedTotal }}</strong>
         </p>
-        <p v-else class="text-body">
+        <p v-else class="ibm-plex-mono-semibold">
           <strong>Il carrello è vuoto</strong>
         </p>
         <button
           @click="goToPayment"
           :disabled="!cart.length"
-          class="pay-button"
+          class="button-menu ibm-plex-mono-regular"
         >
           Paga
         </button>
@@ -137,9 +142,9 @@ export default {
   position: fixed;
   top: 0;
   right: 0;
-  width: 400px;
+  width: 500px;
   height: 100%;
-  background-color: #f8f9fa;
+  background-color: #f8f9faf3;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
   z-index: 1050;
   display: flex;
@@ -164,8 +169,15 @@ export default {
   background-color: transparent;
   border: none;
   font-size: 1.5rem;
-  color: red;
+  color: #fac200;
   cursor: pointer;
+}
+
+.button-add{
+  padding: 10px 15px;
+  color: white;
+  background-color:#fac200;
+  border-radius:5px;
 }
 
 .pay-button {
@@ -179,7 +191,25 @@ export default {
   width: 100%;
   margin-top: 20px;
 }
-
+.button-menu {
+  background-color: #2f2f2f;
+  width: 100%;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+}
+.button-menu-delete {
+  background-color: #2f2f2f;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 10px;
+}
+.button-menu:hover {
+  background-color: #fac200;
+  border: #2f2f2f solid 1px;
+}
 .pay-button:disabled {
   background-color: #ccc;
   cursor: not-allowed;

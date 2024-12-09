@@ -15,8 +15,7 @@ export default {
     <!-- Jumbotron -->
     <section class="jumbotron d-flex align-items-center">
       <div class="container text-center">
-        <h1 class="display-4 text-dark fw-bold">Benvenuti su DeliveBoo!</h1>
-        
+        <h1 class="display-4 my-title ">Benvenuti su DeliveBoo!</h1>
       </div>
     </section>
 
@@ -37,12 +36,9 @@ export default {
 
 .jumbotron h1 {
   font-family: "neplus", serif;
-  font-size: 3rem;
+  font-size: 4rem;
 }
 
-.jumbotron p {
-  font-size: 1.2rem;
-}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {

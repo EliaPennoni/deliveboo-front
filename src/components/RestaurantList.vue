@@ -27,7 +27,6 @@ export default {
         console.error("Errore nel recupero dei ristoranti:", error);
       }
     },
-    // Carica le categorie al montaggio del componente
     async fetchCategories() {
       try {
         const response = await axios.get(
@@ -38,24 +37,18 @@ export default {
         console.error("Errore nel caricamento delle categorie:", error);
       }
     },
-
-    // Filtra i ristoranti in base alle categorie selezionate
     filterRestaurants() {
       if (this.selectedCategories.length === 0) {
-        this.restaurants = [...this.allRestaurants]; // Se nessuna categoria è selezionata, mostra tutti i ristoranti
+        this.restaurants = [...this.allRestaurants];
         return;
       }
-
-      // Filtra i ristoranti che hanno tutte le categorie selezionate
       this.restaurants = this.allRestaurants.filter((restaurant) => {
-        const restaurantCategories = restaurant.categories.map((cat) => cat.id); // Categorie del ristorante
+        const restaurantCategories = restaurant.categories.map((cat) => cat.id);
         return this.selectedCategories.every((selectedCategory) =>
           restaurantCategories.includes(selectedCategory)
         );
       });
     },
-
-    // Naviga alla pagina dei dettagli del ristorante
     goToDetails(restaurantId) {
       this.$router.push({
         name: "restaurantDetails",
@@ -63,9 +56,7 @@ export default {
       });
     },
   },
-
   mounted() {
-    // Recupera le categorie e i ristoranti all'inizio
     this.fetchCategories();
     this.fetchAllRestaurants();
   },
@@ -74,7 +65,7 @@ export default {
 
 <template>
   <div class="container my-5">
-    <h1 class="text-center mb-4">Ristoranti</h1>
+    <h1 class="ibm-plex-mono-bold text-center fs-1 mb-4">Ristoranti</h1>
     <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
       <div v-for="category in categories" :key="category.id" class="form-check">
         <input
@@ -84,7 +75,9 @@ export default {
           v-model="selectedCategories"
           @change="filterRestaurants"
         />
-        <label class="form-check-label">{{ category.name }}</label>
+        <label class="ibm-plex-mono-regular form-check-label">{{
+          category.name
+        }}</label>
       </div>
     </div>
 
@@ -94,18 +87,22 @@ export default {
         v-for="restaurant in restaurants"
         :key="restaurant.id"
       >
-        <div class="card">
+        <div class="card p-4 background-pattern">
           <img
             :src="restaurant.image"
             class="card-img-top img-fluid"
             alt="Ristorante"
           />
           <div class="card-body text-center">
-            <h5 class="card-title">{{ restaurant.name }}</h5>
-            <p class="card-text">{{ restaurant.address }}</p>
+            <h5 class="ibm-plex-mono-semibold card-title">
+              {{ restaurant.name }}
+            </h5>
+            <p class="ibm-plex-mono-regular card-text">
+              {{ restaurant.address }}
+            </p>
             <button
               @click="goToDetails(restaurant.id)"
-              class="btn btn-primary w-100"
+              class="button-menu ibm-plex-mono-regular w-100"
             >
               Visualizza Piatti
             </button>
@@ -116,55 +113,18 @@ export default {
   </div>
 </template>
 
-
 <style scoped>
-.jumbotron {
-  height: 850px;
-  background-image: url(/images/jumbotron-deliveboo.png);
-  background-size: cover;
-}
-.title-jumbotron > h1 {
-  font-size: 75px;
-  text-transform: uppercase;
-  font-family: "neplus", serif;
-  text-align: center;
-  color: #2f2f2f;
-  padding-top: 80px;
-}
-
-.category-filter-container {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  flex-wrap: wrap;
-  margin-bottom: 30px;
-}
-
-.category-item {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-h3 {
-  margin-bottom: 20px;
-}
 .container {
   border-radius: 30px;
 }
-.background-pattern {
-  background-image: url(/images/background-pattern.png);
-  background-size: contain;
+.card {
+  border-radius: 20px;
+  border: solid 1px #2f2f2f;
 }
-.restaurant {
-  border: 1px solid #ddd;
-  padding: 10px;
-  margin: 10px 0;
-}
-img {
+.card img {
   width: 100%;
   height: 200px;
-  background-size: cover;
+  object-fit: cover;
   border-radius: 20px 20px 0 0;
 }
 .button-menu {
@@ -178,34 +138,24 @@ img {
   background-color: #fac200;
   border: #2f2f2f solid 1px;
 }
-
-.filters-box > * {
-  border: #2f2f2f solid 1px;
-  border-radius: 10px;
-  padding: 5px;
-}
-
 .ibm-plex-mono-regular {
   font-family: "IBM Plex Mono", monospace;
   font-weight: 400;
-  font-style: normal;
   font-size: 15px;
 }
-.ibm-plex-mono-regular-subtitle {
+.ibm-plex-mono-semibold {
   font-family: "IBM Plex Mono", monospace;
-  font-weight: 400;
-  font-style: normal;
+  font-weight: 600;
   font-size: 18px;
-}
-.card {
-  border-radius: 20px;
-  border: solid 1px #2f2f2f;
 }
 .ibm-plex-mono-bold {
   font-family: "IBM Plex Mono", monospace;
   font-weight: 700;
-  font-style: normal;
-  color: #2f2f2f;
   font-size: 30px;
+  color: #2f2f2f;
+}
+.background-pattern {
+  background-image: url(/images/background-pattern.png);
+  background-size: contain;
 }
 </style>
