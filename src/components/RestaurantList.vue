@@ -89,9 +89,17 @@ export default {
     </div>
 
     <div class="row">
-      <div class="col-12 col-sm-6 col-md-4 mb-4" v-for="restaurant in restaurants" :key="restaurant.id">
+      <div
+        class="col-12 col-sm-6 col-md-4 mb-4"
+        v-for="restaurant in restaurants"
+        :key="restaurant.id"
+      >
         <div class="card">
-          <img :src="restaurant.image" class="card-img-top img-fluid" alt="Ristorante">
+          <img
+            :src="restaurant.image"
+            class="card-img-top img-fluid"
+            alt="Ristorante"
+          />
           <div class="card-body text-center">
             <h5 class="card-title">{{ restaurant.name }}</h5>
             <p class="card-text">{{ restaurant.address }}</p>

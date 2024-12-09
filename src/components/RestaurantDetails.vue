@@ -59,6 +59,7 @@ export default {
                 :src="restaurant.image"
                 class="img-fluid"
                 :alt="restaurant.name"
+                @error="restaurant.image = '/images/default-restaurant.png'"
               />
             </div>
             <div class="col-6">
@@ -66,7 +67,7 @@ export default {
                 <h5 class="my-title-card">{{ restaurant.name }}</h5>
                 <p class="card-text">{{ restaurant.address }}</p>
                 <p class="ibm-plex-mono-regular">
-                  Fame? Prendi i piati che ti ispirano di più e noi te lo
+                  Fame? Prendi i piatti che ti ispirano di più e noi te lo
                   portiamo!
                 </p>
               </div>
@@ -84,7 +85,12 @@ export default {
             :key="dish.id"
           >
             <div class="card shadow mb-4">
-              <img class="card-img-top" :src="dish.image" :alt="dish.name" />
+              <img
+                class="card-img-top"
+                :src="dish.image"
+                :alt="dish.name"
+                @error="dish.image = '/images/default-dish.png'"
+              />
               <div class="card-body d-flex flex-column">
                 <h3 class="ibm-plex-mono-bold mb-2">{{ dish.name }}</h3>
                 <p class="ibm-plex-mono-regular">{{ dish.description }}</p>
